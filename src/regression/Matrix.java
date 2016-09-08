@@ -30,6 +30,16 @@ public class Matrix {
 	public Matrix Clone(){
 		return new Matrix(this.data);
 	}
+	public double Sum(){
+		double sum = 0;
+		int row = data.length, col = data[0].length;
+		for(int i = 0; i<row; i++){
+			for(int j = 0; j<col; j++){
+				sum += data[i][j];
+			}
+		}
+		return sum;
+	}
 	/*
 	 * Matrix Add
 	 */
@@ -99,4 +109,8 @@ public class Matrix {
 		}
 		return new Matrix(newdata);
 	}
+	/*
+	 * Matrix Map
+	 */
+	
 }

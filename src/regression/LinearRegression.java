@@ -28,4 +28,10 @@ public class LinearRegression {
 		}
 		return newdata;
 	}
+	/*
+	 * Train Linear Regression
+	 */
+	public void Train(){
+		
+	}
 }
