@@ -109,8 +109,4 @@ public class Matrix {
 		}
 		return new Matrix(newdata);
 	}
-	/*
-	 * Matrix Map
-	 */
-	
 }
