@@ -1,8 +1,8 @@
 #Husky
-Artificial Intelligence Machine 
+Naive Virtual Player 
 
 ##Features
-+ Classical and modern AI technologies
++ Deep Learning
 + Self-activated model adaption
 
 ##Status
@@ -11,4 +11,4 @@ It will come soon but the process will be variant according to my schedule.
 
 ##E-mail
 longyang_123@yeah.net  
-You're most welcome to contact with me to discuss any details in this project.
+You're most welcome to contact with me to discuss any detail in this project.
