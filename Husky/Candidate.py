@@ -9,4 +9,13 @@ class Candidates:
         self.constraints = constraints
 
     def init(self):
+
+    def crossover(self):
+
+    def mutation(self):
+
+    def fitness(self):
         
+    def selection(self):
+
+    def integerstrict(self):
