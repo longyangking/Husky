@@ -10,6 +10,9 @@ class Constraints(object):
         self.table = deque()
 
     def add(self,constraintfunc,penalty):
+        '''
+        Add new constraint
+        '''
         self.table.append((constraintfunc,penalty))
 
     def numberofconstraints(self):

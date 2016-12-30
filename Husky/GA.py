@@ -8,17 +8,17 @@ from Candidate import Candidates
 
 class GA:
     def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=100,popsize=60):
-        self.chromesize = nvars
-        self.timelimit = timelimit
-        self.maxgeneration = maxgeneration
-        self.constraints = Constraints()
-        self.popsize = popsize
-        self.fitnessfunc = fitnessfunc
-        self.candidates = None
-        self.LB = LB
-        self.UB = UB
-        self.IntCon = IntCon
-        self.initpopulation = initpopulation
+        self.chromesize = nvars                 # Number of variants
+        self.timelimit = timelimit              # Time Limit to run
+        self.maxgeneration = maxgeneration      # Max Generation to evlove
+        self.constraints = Constraints()        # Constraints
+        self.popsize = popsize                  # Size of populations
+        self.fitnessfunc = fitnessfunc          # Function to calculate fitness
+        self.candidates = None                  # Candidates
+        self.LB = LB                            # Lower Boundary
+        self.UB = UB                            # Upper Boundary
+        self.IntCon = IntCon                    # Integer Constraint
+        self.initpopulation = initpopulation    # Initial Population
     
     def addconstraint(self,constraintfunc,penalty=100):
         self.constraints.add(constraintfunc,penalty)
