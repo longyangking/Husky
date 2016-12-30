@@ -104,7 +104,7 @@ class Candidates:
         Make a selection from candidates based on tournament selection (Unachieved yet)
         '''
         prob = 1 - self.fitness/np.max(self.fitness)
-        prob = prob/np.sum(prob)
+        prob = -np.sort(-prob/np.sum(prob)) # Elite policy
         probcum = np.cumsum(prob)
         return np.sum(probcum<np.random.random())
 
