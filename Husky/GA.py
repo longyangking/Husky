@@ -7,7 +7,7 @@ from Constraint import Constraints
 from Candidate import Candidates
 
 class GA:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=100,popsize=60):
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=300,popsize=60,tolerance=0.05,verbose=False):
         self.chromesize = nvars                 # Number of variants
         self.timelimit = timelimit              # Time Limit to run
         self.maxgeneration = maxgeneration      # Max Generation to evlove
@@ -18,9 +18,11 @@ class GA:
         self.LB = LB                            # Lower Boundary
         self.UB = UB                            # Upper Boundary
         self.IntCon = IntCon                    # Integer Constraint
-        self.initpopulation = initpopulation    # Initial Population
+        self.initpopulation = initpopulation    # Initial Populations
+        self.verbose = verbose                  # Print Computational Info
+        self.tolerance = tolerance
     
-    def addconstraint(self,constraintfunc,penalty=100):
+    def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
 
     def setparameter(self,parameter,value):
@@ -33,18 +35,19 @@ class GA:
         return False
 
     def start(self):
-        self.candidates = Candidates(self.popsize,self.chromesize,self.fitnessfunc,constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,initpopulation=self.initpopulation):
+        self.candidates = Candidates(self.popsize,self.chromesize,self.fitnessfunc,constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,initpopulation=self.initpopulation,verbose=self.verbose)
         for i in range(self.maxgeneration):
-            self.update()  
+            if self.verbose:
+                print '{num}th generation:'.format(num=i+1),
+            if self.update():
+                if self.verbose:
+                    print 'Optimization terminated: Tolerance is less than specific value {num}'.format(num=self.tolerance)
+                break
+        if self.verbose:
+            print 'Optimization terminated: Maximum Generation'
 
     def update(self):
-        # 1. Generate Initial Generation
-        # 2. Calculate their fitness with penalty
-        # 3. Crossover according to fitnesses
-        # 4. Mutation according to fitnesses
-        # 5. Return to Step 2
-        self.candidates.crossover()
-        self.candidates.mutation()
+        return self.candidates.update(tolerance=self.tolerance)
 
     def getcache(self):
         return self.candidates.getallcandidates(),self.candidates.getallfitness()

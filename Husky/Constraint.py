@@ -30,7 +30,8 @@ class Constraints(object):
     def fitness(self,chrome):
         N = len(self.table)
         totalpenalty = 0
-        for i in range(N):
-            (func,penalty) = self.table[i]
-            totalpenalty += penalty*np.square(np.abs(func(chrome)))
+        if N > 0:
+            for i in range(N):
+                (func,penalty) = self.table[i]
+                totalpenalty += penalty*np.square(np.abs(func(chrome)))
         return totalpenalty
