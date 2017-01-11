@@ -7,7 +7,7 @@ from Constraint import Constraints
 from Candidate import Candidates
 
 class GA:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=300,popsize=60,tolerance=0.05,verbose=False):
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=300,popsize=100,tolerance=0.05,verbose=False):
         self.chromesize = nvars                 # Number of variants
         self.timelimit = timelimit              # Time Limit to run
         self.maxgeneration = maxgeneration      # Max Generation to evlove
