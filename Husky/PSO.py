@@ -6,19 +6,19 @@ import numpy as np
 
 class PSO:
     def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,timelimit=None,maxgeneration=300,particlesize=100,tolerance=0.05,verbose=False):
-        self.featuresize = nvars
-        self.timelimit = timelimit
-        self.maxgeneration = maxgeneration
-        self.constraints = Constraints()
-        self.particlesize = particlesize
-        self.fitnessfunc = fitnessfunc
-        self.particles = None
-        self.LB = LB
-        self.UB = UB
-        self.IntCon = IntCon
-        self.initparticles = initparticles
-        self.verbose = verbose
-        self.tolerance = tolerance
+        self.featuresize = nvars                # Number of variables
+        self.timelimit = timelimit              # Time limit to optimize
+        self.maxgeneration = maxgeneration      # Maximum of generation
+        self.constraints = Constraints()        # Nomral Constraints class
+        self.particlesize = particlesize        # Size of particle swarm
+        self.fitnessfunc = fitnessfunc          # Fitness function
+        self.particles = None                   # Particles class
+        self.LB = LB                            # Lower Boundary
+        self.UB = UB                            # Upper Boundary
+        self.IntCon = IntCon                    # Integer Constraint
+        self.initparticles = initparticles      # Initial particles
+        self.verbose = verbose                  # Verbose sign
+        self.tolerance = tolerance              # Optimization Tolerance
     
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
