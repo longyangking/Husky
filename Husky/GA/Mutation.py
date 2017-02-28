@@ -15,3 +15,19 @@ def Mutation(chromes,LB,UB,IntCon,preal=0.5,pint=1):
         newchromes[i,:] = IntegerStriction(newchrome,LB,UB,IntCon)
 
     return newchromes
+
+def SinglePoint():
+    # TODO
+    pass
+
+def Gaussian():
+    # TODO
+    pass
+
+def Uniform():
+    # TODO
+    pass
+
+def AdaptiveFeasible():
+    # TODO
+    pass

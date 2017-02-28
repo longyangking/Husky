@@ -5,6 +5,7 @@
 import numpy as np
 from collections import deque
 
+# TODO ALGA and Penalty
 class Constraints(object):
     def __init__(self):
         self.table = deque()

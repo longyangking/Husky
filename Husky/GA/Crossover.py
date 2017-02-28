@@ -26,3 +26,26 @@ def Crossover(chromes,fitness,LB,UB,IntCon,a=0,breal=0.5,bint=1):
 
     return newchromes
 
+def Scattered():
+    # TODO
+    pass
+
+def SinglePoint():
+    # TODO
+    pass
+
+def TwoPoint():
+    # TODO
+    pass
+
+def Intermediate():
+    # TODO
+    pass
+
+def Heuristic():
+    # TODO
+    pass
+
+def Arithmetic():
+    # TODO
+    pass
