@@ -23,7 +23,7 @@ class Candidates:
         else:
             self.UB = 2.0**64
 
-        if LB is not None: 
+        if UB is not None: 
             self.UB = UB
         else:
             self.UB = 2.0**-64
