@@ -7,12 +7,18 @@ from Constraint import Constraints
 from Candidate import Candidates
 
 class GA:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,timelimit=None,maxgeneration=300,popsize=100,tolerance=0.05,verbose=False):
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,\
+        timelimit=None,maxgeneration=300,popsize=300,\
+        stallgenlimit=50,stalltimelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,tolerance=0.05,\
+        elitecount=2,crossoverfraction=0.8,verbose=False,parallelized=False):
         self.chromesize = nvars                 # Number of variants
         self.timelimit = timelimit              # Time Limit to run
         self.maxgeneration = maxgeneration      # Max Generation to evlove
         self.constraints = Constraints()        # Constraints
-        self.popsize = popsize                  # Size of populations
+        if IntCon is None:                      # Size of populations
+            self.popsize = popsize              
+        else:
+            self.popsize = np.max([15*nvars,popsize])
         self.fitnessfunc = fitnessfunc          # Function to calculate fitness
         self.candidates = None                  # Candidates
         self.LB = LB                            # Lower Boundary
@@ -20,7 +26,11 @@ class GA:
         self.IntCon = IntCon                    # Integer Constraint
         self.initpopulation = initpopulation    # Initial Populations
         self.verbose = verbose                  # Print Computational Info
-        self.tolerance = tolerance
+        if IntCon is None:                      # Elite Count
+            self.elitecount = elitecount
+        else:
+            self.elitecount = np.min([np.max([nvars,2]),5])
+        self.tolerance = tolerance              #
     
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)

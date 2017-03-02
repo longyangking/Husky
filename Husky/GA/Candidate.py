@@ -6,7 +6,9 @@ import numpy as np
 from Constraint import Constraints
 
 class Candidates:
-    def __init__(self,popsize,chromesize,fitnessfunc,constraints=None,IntCon=None,LB=None,UB=None,initpopulation=None,verbose=False):
+    def __init__(self,popsize,chromesize,fitnessfunc,\
+                constraints=None,IntCon=None,LB=None,UB=None,\
+                initpopulation=None,Elitecount=2,crossfraction=0.8,verbose=False):
         self.popsize = popsize
         self.chromesize = chromesize
         self.fitnessfunc = fitnessfunc
@@ -28,6 +30,7 @@ class Candidates:
         else:
             self.UB = 2.0**-64
 
+        
         self.verbose = verbose
         self.init()
 
