@@ -4,7 +4,10 @@
 
 import numpy as np
 
-def Uniform(chromes,LB,UB,IntCon,preal=0.1,pint=0.2):
+def Uniform(chromes,LB,UB,IntCon=None,preal=0.1,pint=0.2):
+    '''
+    Uniform random mutation (Default)
+    '''
     (M,N) = np.shape(chromes)
     newchromes = np.zeros([M,N])
     # Satisfy the Integer constraints
@@ -31,15 +34,36 @@ def Uniform(chromes,LB,UB,IntCon,preal=0.1,pint=0.2):
 
     return newchromes
 
-def SinglePoint(chromes,LB,UB,IntCon,constraints):
-    # TODO
-    pass
+def Gaussian(chromes,LB,UB,IntCon=None,shrink=1,scale=1):
+    '''
+    Mutate based on the standard deviation
+    '''
+    (M,N) = np.shape(chromes)
+    newchromes = np.zeros([M,N])
 
-def Gaussian(chromes,LB,UB,IntCon,constraints):
-    # TODO
-    pass
+    scale = scale - shrink*scale*np.std(chromes,axis=0)
 
+    for i in range(M):
+        newchrome = chromes[i] + scale*np.random.randint(M,size=N)
+        # Integer constraints
+        if IntCon is not None:
+            intchrome = np.floor(newchrome[IntCon])
+            intchrome = intchrome + 1*(np.random.random(size=np.size(intchrome))>0.5)
+            newchrome[IntCon] = intchrome
+            
+        posLB = np.where(newchrome<LB)
+        newchrome[posLB] = UB[posLB]
 
-def AdaptiveFeasible(chromes,LB,UB,IntCon,constraints):
-    # TODO
-    pass
+        posUB = np.where(newchrome>UB)
+        newchrome[posUB] = LB[posUB]
+
+        newchromes[i] = newchrome
+    
+    return newchromes
+
+def AdaptiveFeasible(chromes,LB,UB,constraint,IntCon=None):
+    '''
+    Randomly mutate that are adaptive with respect to the constraints (filter the individuals in advance)
+    '''
+    # TODO This part will be done after the completement of module Optimize
+    return Uniform(chromes,LB,UB,IntCon=None)

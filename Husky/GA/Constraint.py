@@ -7,8 +7,9 @@ from collections import deque
 
 # TODO ALGA and Penalty
 class Constraints(object):
-    def __init__(self):
+    def __init__(self,NonlinConAlgorithm='penalty'):
         self.table = deque()
+        self.NonlinConAlgorithm = NonlinConAlgorithm
 
     def add(self,constraintfunc,penalty):
         '''

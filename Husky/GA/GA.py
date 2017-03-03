@@ -9,8 +9,11 @@ from Candidate import Candidates
 class GA:
     def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,\
         timelimit=None,maxgeneration=300,popsize=300,\
-        stallgenlimit=50,stalltimelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,tolerance=0.05,\
-        elitecount=2,crossoverfraction=0.8,verbose=False,parallelized=False):
+        stallgenlimit=50,stalltimelimit=None,fitnesslimit=None,\
+        TolCon=1.0*10**-6,TolFun=1.0*10**-6,tolerance=0.05,\
+        migrateforward=True,migrationfraction=0.2,migrationinterval=20,\
+        elitecount=2,crossoverfraction=0.8,paretofraction=0.35,\
+        verbose=False,parallelized=False):
         self.chromesize = nvars                 # Number of variants
         self.timelimit = timelimit              # Time Limit to run
         self.maxgeneration = maxgeneration      # Max Generation to evlove
@@ -36,12 +39,14 @@ class GA:
         self.constraints.add(constraintfunc,penalty)
 
     def setparameter(self,parameter,value):
-        if parameter == 'timelimit':
-            self.timelimit = value
-            return True
-        if parameter == 'maxgeneration':
-            self.maxgeneration = value
-            return True
+        # TODO
+        if parameter == 'createfunction':
+        if parameter == 'crossoverfunction':
+        if parameter == 'distancemeasurefunction':
+        if parameter == 'fitnessscalingfunction':
+        if parameter == 'mutationfunction':
+        if parameter == 'selectionfunction':
+        if parameter == 'stalltest':
         return False
 
     def start(self):
@@ -58,6 +63,10 @@ class GA:
 
     def update(self):
         return self.candidates.update(tolerance=self.tolerance)
+
+    def migration(self):
+        # TODO
+        pass
 
     def getcache(self):
         return self.candidates.getallcandidates(),self.candidates.getallfitness()

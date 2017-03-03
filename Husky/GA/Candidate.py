@@ -8,7 +8,8 @@ from Constraint import Constraints
 class Candidates:
     def __init__(self,popsize,chromesize,fitnessfunc,\
                 constraints=None,IntCon=None,LB=None,UB=None,\
-                initpopulation=None,Elitecount=2,crossfraction=0.8,verbose=False):
+                initpopulation=None,Elitecount=2,crossfraction=0.8,mutationrate=0.1,\
+                verbose=False):
         self.popsize = popsize
         self.chromesize = chromesize
         self.fitnessfunc = fitnessfunc
@@ -60,21 +61,6 @@ class Candidates:
             while father == mother:
                 mother = self.selection()
 
-            #r = np.random.random(N)
-            #u = np.random.random(N)
-
-            #beta = a + breal*np.log(u)*(r>0.5) - breal*np.log(u)*(r<=0.5)
-            #if self.IntCon is not None:
-            #    beta[self.IntCon] = a + bint*np.log(u[self.IntCon])*(r[self.IntCon]>0.5) - bint*np.log(u[self.IntCon])*(r[self.IntCon]<=0.5)
-
-            #x1 = self.populations[father]
-            #x2 = self.populations[mother]
-            #y1 = x1 + beta*np.abs(x1-x2)
-            #y2 = x2 + beta*np.abs(x1-x2)
-
-            #newpopulations[newpopsize,:] = y1
-            #newpopulations[newpopsize+1,:] = y2 
-
             crosschromestart = np.random.randint(self.chromesize)
             crosschromeend = np.random.randint(crosschromestart+1,self.chromesize+1)
 
@@ -110,18 +96,6 @@ class Candidates:
 
         for i in range(M):
             chrome = self.populations[i].copy()
-            #P = preal*np.ones(N)
-            #if self.IntCon is not None:
-            #    P[self.IntCon] = pint
-
-            #s = np.random.random(N)**P
-            #r = np.random.random(N)
-
-            #t = (chrome-self.LB)/(self.UB-chrome)
-
-            #newchromes[i] = chrome - s*(chrome-self.LB)*(r>t) + s*(self.UB-chrome)*(r<=t)
-        
-            #size = np.floor(np.random.random()*self.chromesize)
             pos = np.random.randint(self.chromesize)
             value = self.LB[pos] + (self.UB[pos]-self.LB[pos])*np.random.random()
             chrome[pos] = value
