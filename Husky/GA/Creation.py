@@ -2,7 +2,7 @@
 
 import numpy as np
 
-def Uniform(popsize,chromesize,LB,UB,IntCon):
+def Uniform(popsize,chromesize,LB,UB,IntCon=None):
     '''
     Create Random Initial Population for GA
     '''

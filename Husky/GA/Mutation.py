@@ -4,12 +4,15 @@
 
 import numpy as np
 
-def Uniform(chromes,LB,UB,IntCon=None,preal=0.1,pint=0.2):
+def Uniform(chromes,LB,UB,IntCon=None,mutationrate,preal=0.1,pint=0.2):
     '''
     Uniform random mutation (Default)
     '''
     (M,N) = np.shape(chromes)
     newchromes = np.zeros([M,N])
+    if mutationrate is not None:
+        preal = mutationrate
+        pint = 2.0*preal
     # Satisfy the Integer constraints
     for i in range(M):
         chrome = chromes[i]
@@ -34,7 +37,7 @@ def Uniform(chromes,LB,UB,IntCon=None,preal=0.1,pint=0.2):
 
     return newchromes
 
-def Gaussian(chromes,LB,UB,IntCon=None,shrink=1,scale=1):
+def Gaussian(chromes,LB,UB,IntCon=None,mutationrate,shrink=1,scale=1):
     '''
     Mutate based on the standard deviation
     '''

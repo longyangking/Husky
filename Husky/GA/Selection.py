@@ -11,6 +11,7 @@ def Tournament(fitness,nParents=1,tournamentsize=3):
     Choose best individual based on the Tournament
     '''
     selected = np.zeros(nParents)
+    N = np.size(fitness)
     for i in range(nParents):
         pos = np.random.randint(N,size=tournamentsize)
         bestindividual = fitness[pos]
