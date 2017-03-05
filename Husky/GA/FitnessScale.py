@@ -9,7 +9,7 @@ def Rank(fitness):
     Scale the raw scores based on the rank of each individual (Default)
     '''
     pos = np.argsort(fitness)
-    popsize = np.size(finess)
+    popsize = np.size(fitness)
     scaledfitness = np.zeros(popsize)
     scaledfitness[pos] = 1.0/np.square(np.linspace(1,popsize,popsize))
     return scaledfitness

@@ -113,8 +113,8 @@ def SinglePoint(parents,fitness,LB,UB,IntCon=None):
 
         father = parents[fatherindex]
         mother = parents[motherindex]
-        son = father[:pos] + mother[pos:]
-        girl = mother[:pos] + father[pos:]
+        son = np.concatenate((father[:pos], mother[pos:]))
+        girl = np.concatenate((mother[:pos], father[pos:]))
 
         childs[index] = son
         childs[index+1] = girl
@@ -142,7 +142,7 @@ def SinglePoint(parents,fitness,LB,UB,IntCon=None):
 
 def TwoPoint(parents,fitness,LB,UB,IntCon=None):
     '''
-    Crossover based on two random points
+    Crossover based on two random points (Default)
     '''
     (M,N) = np.shape(parents)
     childs = np.zeros([M,N])
@@ -158,11 +158,13 @@ def TwoPoint(parents,fitness,LB,UB,IntCon=None):
 
         father = parents[fatherindex]
         mother = parents[motherindex]
-        son = father[start:end] + mother[:start] + mother[end:]
-        girl = mother[start:end] + father[:start] + father[end:]
+
+        son = np.concatenate((mother[:start], father[start:end], mother[end:]))
+        girl = np.concatenate((father[:start], mother[start:end], father[end:]))
 
         childs[index] = son
-        childs[index+1] = girl
+        if index+1 < M:                 # Odd number of parents
+            childs[index+1] = girl
 
         index = index + 2
     

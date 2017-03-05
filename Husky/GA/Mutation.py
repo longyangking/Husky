@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def Uniform(chromes,LB,UB,IntCon=None,mutationrate,preal=0.1,pint=0.2):
+def Uniform(chromes,LB,UB,mutationrate,IntCon=None,preal=0.1,pint=0.2):
     '''
     Uniform random mutation (Default)
     '''
@@ -37,7 +37,7 @@ def Uniform(chromes,LB,UB,IntCon=None,mutationrate,preal=0.1,pint=0.2):
 
     return newchromes
 
-def Gaussian(chromes,LB,UB,IntCon=None,mutationrate,shrink=1,scale=1):
+def Gaussian(chromes,LB,UB,mutationrate,IntCon=None,shrink=1,scale=1):
     '''
     Mutate based on the standard deviation
     '''

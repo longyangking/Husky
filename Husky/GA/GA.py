@@ -3,13 +3,15 @@
 # License:  LGPL-2.1
 
 import numpy as np
+import time
+
 from Constraint import Constraints
 from Candidate import Candidates
 import Creation
 import Selection
 import FitnessScale
 import Crossover 
-import Mutation 
+import Mutation
 
 class GA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
@@ -33,7 +35,7 @@ class GA:
         self.stallgenlimit = stallgenlimit
         self.stalltimelimit = stalltimelimit
         self.fitnesslimit = fitnesslimit
-        self.timelimit = timelimit              # Time Limit to run (in unit of minutes)
+        self.timelimit = timelimit              # Time Limit to run (in unit of seconds)
         self.TolCon = TolCon
         self.TolFun = TolFun
 
@@ -61,6 +63,12 @@ class GA:
         self.mutationfunction = Mutation.Uniform
         self.fitnessscalingfunction = FitnessScale.Rank
         self.selectionfunction = Selection.Tournament
+
+        # Stall Limit
+        self.stallfitness = None
+        self.stallgeneration = 0
+        self.stallstarttime = 0
+        self.stalltime = 0
     
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
@@ -123,6 +131,7 @@ class GA:
         return False
 
     def start(self):
+        starttime = time.time()
         self.candidates = Candidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
                                     constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,\
                                     initpopulation=self.initpopulation,Elitecount=self.elitecount,\
@@ -141,10 +150,19 @@ class GA:
                 self.update()
                 
                 [status,code] = self.check()
+                # Terminate by the tolerance
                 if status:
                     if self.verbose:
                         print 'Optimization terminated: {reason}'.format(reason=code)
                     break
+
+                # Terminate by the time limit
+                if self.timelimit is not None:
+                    currenttime = time.time()
+                    if currenttime-starttime > self.timelimit:
+                        if self.verbose:
+                            print 'Optimization terminated: Time Limit!'
+                        break
             if self.verbose:
                 print 'Optimization terminated: Maximum Generation'
         else:
@@ -155,13 +173,55 @@ class GA:
                 self.update()
                     
                 [status,code] = self.check()
+                # Terminate by the tolerance
                 if status:
                     if self.verbose:
                         print 'Optimization terminated: {reason}'.format(reason=code)
                     break
 
+                # Terminate by the time limit
+                if self.timelimit is not None:
+                    currenttime = time.time()
+                    if currenttime-starttime > self.timelimit:
+                        if self.verbose:
+                            print 'Optimization terminated: Time Limit!'
+                        break
+
+    def check(self):
+        fitness = self.candidates.getallfitness()
+        
+        # Fitness Limit
+        if self.fitnesslimit is not None:
+            if np.min(self.fitness) < self.fitnesslimit:
+                return True,'Fitness Limit'
+        
+        if self.stallfitness is None:
+            self.stallfitness = fitness
+            return False,None
+        
+        # Calculate Stall Generation
+        averagechange = np.sqrt(np.mean(np.square(fitness-self.stallfitness)))
+        if averagechange < self.TolFun:
+            self.stallgeneration += 1
+            self.stalltime = self.stalltime + time.time() - self.stallstarttime
+        else:
+            self.stallgeneration = 0
+            self.stallstarttime = time.time()
+            self.stalltime = 0
+        
+        # Stall Generation Limit
+        if self.stallgeneration > self.stallgenlimit:
+            return True,'Stall Generation Limit'
+
+        # Stall Time Limit
+        if self.stalltimelimit is not None:
+            if self.stalltime > self.stalltimelimit:
+                return True,'Stall Time Limit'
+
+        return False,None
+
     def update(self):
-        return self.candidates.update(tolerance=self.tolerance)
+        return self.candidates.update()
 
     def migration(self):
         # TODO

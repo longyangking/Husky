@@ -1,5 +1,3 @@
-from .Husky import Husky
-
 __all__ = [
     'GA'
     'Husky'

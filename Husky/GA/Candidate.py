@@ -6,7 +6,7 @@ import numpy as np
 
 class Candidates:
     def __init__(self,popsize,chromesize,func,constraints,IntCon,LB,UB,\
-                initpopulation,Elitecount,crossfraction,mutationrate,\
+                initpopulation,Elitecount,crossoverfraction,mutationrate,\
                 createfunction,crossoverfunction,mutationfunction,selectionfunction,fitnessscalingfunction,\
                 verbose):
         self.verbose = verbose
@@ -33,7 +33,7 @@ class Candidates:
         else:
             self.populations = initpopulation
         self.Elitecount = Elitecount
-        self.crossfraction = crossfraction
+        self.crossoverfraction = crossoverfraction
         self.mutationrate = mutationrate
 
         self.createfunction = createfunction
@@ -62,7 +62,7 @@ class Candidates:
         '''
         Crossover Operation
         ''' 
-        nParents = np.floor(1.0*(self.popsize - self.Elitecount)*self.crossfraction)
+        nParents = int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
         parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents)
         childs = self.crossoverfunction(parents=self.populations[parentindexs],fitness=self.scaledfitness,\
                 LB=self.LB,UB=self.UB,IntCon=self.IntCon)
@@ -72,7 +72,7 @@ class Candidates:
         '''
         Mutation Operation
         '''
-        nParents = self.popsize - self.Elitecount - np.floor(1.0*(self.popsize - self.Elitecount)*self.crossfraction)
+        nParents = self.popsize - self.Elitecount - int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
         parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents)
         childs = self.mutationfunction(chromes=self.populations[parentindexs],\
                     LB=self.LB,UB=self.UB,IntCon=self.IntCon,mutationrate=self.mutationrate)
@@ -88,18 +88,23 @@ class Candidates:
         return np.array([])
 
     def update(self):
+        '''
+        Populations Evolution
+        '''
         if self.verbose:
-            print 'Start: Elite -> ',
+            print 'Start: ',
         elitechilds = self.elite()
 
         if self.verbose:
-            print 'Cross -> ',
+            print 'Elite -> ',
         crossoverchilds = self.crossover()
 
         if self.verbose:
-            print 'Mutate -> ',
+            print 'Cross -> ',
         mutationchilds = self.mutation()
 
+        if self.verbose:
+            print 'Mutate -> ',
         self.populations = np.concatenate((elitechilds,crossoverchilds,mutationchilds))
         #self.populations = self.populations[np.argsort(self.fitness)[:self.popsize]]
         # Whether allow the competetion between parents and childs
@@ -107,13 +112,9 @@ class Candidates:
         if self.verbose:
             print 'Finished!'
 
-    def check(self,stallgenlimit,stalltimelimit,fitnesslimit,TolCon,TolFun):
-
-        return False,None
-
     def getbestcandidate(self):
         bestcandidate = np.argmax(self.scaledfitness)
-        return self.populationsbestcandidate],self.fitness[bestcandidate]
+        return self.populations[bestcandidate],self.fitness[bestcandidate]
 
     def getallcandidates(self):
         return self.populations
