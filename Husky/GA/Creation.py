@@ -6,11 +6,6 @@ def Uniform(popsize,chromesize,LB,UB,IntCon=None):
     '''
     Create Random Initial Population for GA
     '''
-    if LB is None: 
-        UB = 2.0**32
-    if LB is  None: 
-        LB = -2.0**32
-
     populations = np.zeros((popsize,chromesize))
 
     for i in range(popsize):

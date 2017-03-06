@@ -15,7 +15,7 @@ import Mutation
 
 class GA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
-        stallgenlimit=50,stalltimelimit=None,fitnesslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,\
+        stallgenlimit=100,stalltimelimit=None,fitnesslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,diversitylimit=0.05,\
         groupsize=1,migrateforward=True,migrationfraction=0.2,migrationinterval=20,\
         elitecount=2,crossoverfraction=0.8,mutationrate=0.1,\
         verbose=False,parallelized=False):
@@ -38,6 +38,7 @@ class GA:
         self.timelimit = timelimit              # Time Limit to run (in unit of seconds)
         self.TolCon = TolCon
         self.TolFun = TolFun
+        self.diversitylimit = diversitylimit
 
         self.groupsize = groupsize
         self.migrateforward = migrateforward
@@ -186,6 +187,8 @@ class GA:
                         if self.verbose:
                             print 'Optimization terminated: Time Limit!'
                         break
+                
+                generation += 1
 
     def check(self):
         fitness = self.candidates.getallfitness()
@@ -204,14 +207,20 @@ class GA:
         if averagechange < self.TolFun:
             self.stallgeneration += 1
             self.stalltime = self.stalltime + time.time() - self.stallstarttime
+            if self.verbose:
+                print ' -> Start stall: Generation {generation}th '.format(generation=self.stallgeneration)
         else:
             self.stallgeneration = 0
             self.stallstarttime = time.time()
             self.stalltime = 0
+            self.stallfitness = fitness
         
         # Stall Generation Limit
         if self.stallgeneration > self.stallgenlimit:
             return True,'Stall Generation Limit'
+
+        if self.candidates.getdiversity() < self.diversitylimit:
+            return True,'Diversity Limit'
 
         # Stall Time Limit
         if self.stalltimelimit is not None:

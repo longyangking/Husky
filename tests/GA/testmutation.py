@@ -6,7 +6,7 @@ import Husky.GA.Selection as Selection
 import unittest 
 
 
-class TestGAselection(unittest.TestCase):
+class TestGAmutation(unittest.TestCase):
     def setUp(self):
         pass
 

@@ -26,14 +26,15 @@ def Uniform(chromes,LB,UB,mutationrate,IntCon=None,preal=0.1,pint=0.2):
         if IntCon is not None:
             intchrome = np.floor(chrome[IntCon])
             intchrome = intchrome + 1*(np.random.random(size=np.size(intchrome))>0.5)
-
-            posLB = np.where(intchrome<LB[IntCon])
-            intchrome[posLB] = UB[IntCon][posLB]        # Mutate to be UB when lower than LB
-
-            posUB = np.where(intchrome>UB[IntCon])
-            intchrome[posUB] = LB[IntCon][posUB]        # Mutate to be LB when larger than UB
-            
             chrome[IntCon] = intchrome
+
+        posLB = np.where(chrome<LB)
+        chrome[posLB] = UB[posLB]        # Mutate to be UB when lower than LB
+
+        posUB = np.where(chrome>UB)
+        chrome[posUB] = LB[posUB]        # Mutate to be LB when larger than UB
+
+        newchromes[i] = chrome
 
     return newchromes
 

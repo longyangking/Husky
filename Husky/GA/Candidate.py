@@ -19,12 +19,12 @@ class Candidates:
         if LB is not None: 
             self.LB = LB
         else:
-            self.LB = -2.0**32*np.ones(chromesize)
+            self.LB = -10000.0*np.ones(chromesize)              # Initial LB would make a huge influence about the optimization
 
         if UB is not None: 
             self.UB = UB
         else:
-            self.UB = 2.0**32*np.ones(chromesize)
+            self.UB = 10000.0*np.ones(chromesize)
 
         if initpopulation is None:
             self.populations = createfunction(popsize=popsize,chromesize=chromesize,LB=self.LB,UB=self.UB,IntCon=IntCon)
@@ -96,21 +96,22 @@ class Candidates:
         elitechilds = self.elite()
 
         if self.verbose:
-            print 'Elite -> ',
+            print 'Elite({num}) -> '.format(num=np.size(elitechilds)),
         crossoverchilds = self.crossover()
 
         if self.verbose:
-            print 'Cross -> ',
+            print 'Cross({num}) -> '.format(num=np.size(crossoverchilds)),
         mutationchilds = self.mutation()
 
         if self.verbose:
-            print 'Mutate -> ',
+            print 'Mutate({num}) -> '.format(num=np.size(mutationchilds)),
+            
         self.populations = np.concatenate((elitechilds,crossoverchilds,mutationchilds))
         #self.populations = self.populations[np.argsort(self.fitness)[:self.popsize]]
         # Whether allow the competetion between parents and childs
         self.fit()
         if self.verbose:
-            print 'Finished!'
+            print 'Finished! Diversity:',self.getdiversity()
 
     def getbestcandidate(self):
         bestcandidate = np.argmax(self.scaledfitness)
@@ -121,3 +122,9 @@ class Candidates:
 
     def getallfitness(self):
         return self.fitness
+
+    def getdiversity(self):
+        delta = np.std(self.populations,axis=0)
+        average = np.abs(np.mean(self.populations,axis=0))
+        diversity =  np.sum(delta/average)/np.size(delta)
+        return diversity
