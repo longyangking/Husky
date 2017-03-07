@@ -3,9 +3,13 @@
 # License: LGPL-2.1
 
 import numpy as np
+import Creation
 
 class PSO:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,timelimit=None,maxgeneration=300,particlesize=100,tolerance=0.05,verbose=False):
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,\
+        timelimit=None,\
+        maxiter=300,particlesize=100,\
+        parallelized=False,verbose=False):
         self.featuresize = nvars                # Number of variables
         self.timelimit = timelimit              # Time limit to optimize
         self.maxgeneration = maxgeneration      # Maximum of generation
@@ -19,6 +23,8 @@ class PSO:
         self.initparticles = initparticles      # Initial particles
         self.verbose = verbose                  # Verbose sign
         self.tolerance = tolerance              # Optimization Tolerance
+
+        self.creationfunction = Creation.Uniform
     
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
