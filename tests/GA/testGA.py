@@ -56,7 +56,7 @@ class TestGA(unittest.TestCase):
         """
         LB = np.array([-8,-3,-3])
         UB = np.array([3,3,6])
-        ga = GA.GA(func,3,LB=LB,UB=UB,verbose=True)
+        ga = GA.GA(func,3,LB=LB,UB=UB,verbose=False)
         ga.start()
         (bestcandidate,value) = ga.getsolution()
         #print bestcandidate
