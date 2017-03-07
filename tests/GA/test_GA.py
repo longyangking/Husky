@@ -19,7 +19,7 @@ def func2(x):
 
 class TestGA(unittest.TestCase):
     def setUp(self):
-        self.tolerance = 0.01
+        self.tolerance = 0.1
 
     def testGeneralGA(self):
         """
@@ -62,6 +62,22 @@ class TestGA(unittest.TestCase):
         #print bestcandidate
         #self.assertTrue(np.sum(np.square(bestcandidate-[2.6,  1.5  ,3]))/3<self.tolerance)
         self.assertTrue(np.abs(value-0.0)<self.tolerance)
+
+        ga = GA.GA(func,3,verbose=False)
+        ga.start()
+        (bestcandidate,value) = ga.getsolution()
+        #print value
+        #self.assertTrue(np.sum(np.square(bestcandidate-[2.6,  1.5  ,3]))/3<self.tolerance)
+        self.assertTrue(np.abs(value-0.0)<self.tolerance)
+
+    def testMigration(self):
+        LB = np.array([0,0,3])
+        UB = np.array([3,3,6])
+        ga = GA.GA(func2,3,LB=LB,UB=UB,verbose=False,groupsize=2)
+        ga.start()
+        (bestcandidate,value) = ga.getsolution()
+        #self.assertTrue(np.sum(np.square(bestcandidate-[0,  1.5  , 3.5]))/np.sum(np.abs([0,  1.5  , 3.5]))<self.tolerance)
+        self.assertTrue(np.sum(np.square(value-(-17.57)))<self.tolerance)
 
     def testLinearConstraint(self):
         '''

@@ -19,12 +19,12 @@ class Candidates:
         if LB is not None: 
             self.LB = LB
         else:
-            self.LB = -10000.0*np.ones(chromesize)              # Initial LB would make a huge influence about the optimization
+            self.LB = -10.0*np.ones(chromesize)              # Initial LB would make a huge influence about the optimization
 
         if UB is not None: 
             self.UB = UB
         else:
-            self.UB = 10000.0*np.ones(chromesize)
+            self.UB = 10.0*np.ones(chromesize)
 
         if initpopulation is None:
             self.populations = createfunction(popsize=popsize,chromesize=chromesize,LB=self.LB,UB=self.UB,IntCon=IntCon)
@@ -112,6 +112,20 @@ class Candidates:
         self.fit()
         if self.verbose:
             print 'Finished! Diversity:',self.getdiversity()
+
+    def migrateout(self,popsize):
+        '''
+        Select members to migrate out from this populations
+        '''
+        selected = np.random.randint(self.popsize,size=popsize)
+        return self.populations[selected],selected
+
+    def migratein(self,position,populations):
+        '''
+        Migrate some external members from other populations
+        '''
+        self.populations[position] = populations
+        return True
 
     def getbestcandidate(self):
         bestcandidate = np.argmax(self.scaledfitness)

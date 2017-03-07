@@ -55,7 +55,8 @@ class GA:
         self.verbose = verbose                  # Print Computational Info
         self.parallelized = parallelized
 
-        self.candidates = None                  # Candidates
+        self.candidates = list()                # Candidates
+        self.candidatestatus = np.zeros(groupsize)
         self.constraints = Constraints()        # Constraints
 
         # Default Settings
@@ -66,10 +67,10 @@ class GA:
         self.selectionfunction = Selection.Tournament
 
         # Stall Limit
-        self.stallfitness = None
-        self.stallgeneration = 0
-        self.stallstarttime = 0
-        self.stalltime = 0
+        self.stallfitness = list()
+        self.stallgeneration = np.zeros(groupsize)
+        self.stallstarttime = np.zeros(groupsize)
+        self.stalltime = np.zeros(groupsize)
     
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
@@ -132,30 +133,41 @@ class GA:
         return False
 
     def start(self):
+        '''
+        Main function to start GA
+        '''
         starttime = time.time()
-        self.candidates = Candidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
-                                    constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,\
-                                    initpopulation=self.initpopulation,Elitecount=self.elitecount,\
-                                    crossoverfraction=self.crossoverfraction,mutationrate=self.mutationrate,\
-                                    createfunction=self.createfunction,\
-                                    crossoverfunction=self.crossoverfunction,\
-                                    mutationfunction=self.mutationfunction,\
-                                    selectionfunction=self.selectionfunction,\
-                                    fitnessscalingfunction=self.fitnessscalingfunction,\
-                                    verbose=self.verbose)
+        for i in range(self.groupsize):
+            self.candidates.append(Candidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
+                                        constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,\
+                                        initpopulation=self.initpopulation,Elitecount=self.elitecount,\
+                                        crossoverfraction=self.crossoverfraction,mutationrate=self.mutationrate,\
+                                        createfunction=self.createfunction,\
+                                        crossoverfunction=self.crossoverfunction,\
+                                        mutationfunction=self.mutationfunction,\
+                                        selectionfunction=self.selectionfunction,\
+                                        fitnessscalingfunction=self.fitnessscalingfunction,\
+                                        verbose=self.verbose))
+            self.candidatestatus[i] = 0
+            self.stallfitness.append(None)
         
         if self.maxgeneration is not None:
             for i in range(self.maxgeneration):
                 if self.verbose:
-                    print '{num}th generation:'.format(num=i+1),
+                    print '{num}th generation:'.format(num=i+1)
                 self.update()
                 
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print 'Optimization terminated: \n{reason}'.format(reason=code)
                     break
+
+                if (i+1)%self.migrationinterval == 0:
+                    self.migrate()
+                    if self.verbose:
+                        print '----Migration----'
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
@@ -170,15 +182,20 @@ class GA:
             generation = 1
             while 1:
                 if self.verbose:
-                    print '{num}th generation:'.format(num=generation),
+                    print '{num}th generation:'.format(num=generation)
                 self.update()
                     
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print 'Optimization terminated: \n{reason}'.format(reason=code)
                     break
+
+                if generation%self.migrationinterval == 0:
+                    self.migrate()
+                    if self.verbose:
+                        print '----Migration----'
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
@@ -191,53 +208,114 @@ class GA:
                 generation += 1
 
     def check(self):
-        fitness = self.candidates.getallfitness()
-        
-        # Fitness Limit
-        if self.fitnesslimit is not None:
-            if np.min(self.fitness) < self.fitnesslimit:
-                return True,'Fitness Limit'
-        
-        if self.stallfitness is None:
-            self.stallfitness = fitness
+        '''
+        Check tolerance of populations
+        '''
+        activecount = 0
+        for i in range(self.groupsize):
+            fitness = self.candidates[i].getallfitness()
+            
+            # Fitness Limit
+            if self.fitnesslimit is not None:
+                if np.min(fitness) < self.fitnesslimit:
+                    self.candidatestatus[i] = 1             # Fitness Limit
+            
+            if self.stallfitness[i] is None:
+                self.stallfitness[i] = fitness
+                activecount += 1
+                continue
+            
+            # Calculate Stall Generation
+            averagechange = np.sqrt(np.mean(np.square(fitness-self.stallfitness[i])))
+            if averagechange < self.TolFun:
+                self.stallgeneration[i] += 1
+                self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
+                #if self.verbose:
+                #    print ' -> Start stall: Generation {generation}th '.format(generation=self.stallgeneration)
+            else:
+                self.stallgeneration[i] = 0
+                self.stallstarttime[i] = time.time()
+                self.stalltime[i] = 0
+                self.stallfitness[i] = fitness
+            
+            # Stall Generation Limit
+            if self.stallgeneration[i] > self.stallgenlimit:
+                self.candidatestatus[i] = 2                 # Stall Gen Limit
+                
+            if self.candidates[i].getdiversity() < self.diversitylimit:
+                self.candidatestatus[i] = 3                 # Diversity Limit
+
+            # Stall Time Limit
+            if self.stalltimelimit is not None:
+                if self.stalltime[i] > self.stalltimelimit:
+                    self.candidatestatus[i] = 4             # Stall Time Limit
+
+            if self.candidatestatus[i] == 0:
+                activecount += 1                            # Some group still alive
+
+        if activecount >= 1:
             return False,None
-        
-        # Calculate Stall Generation
-        averagechange = np.sqrt(np.mean(np.square(fitness-self.stallfitness)))
-        if averagechange < self.TolFun:
-            self.stallgeneration += 1
-            self.stalltime = self.stalltime + time.time() - self.stallstarttime
-            if self.verbose:
-                print ' -> Start stall: Generation {generation}th '.format(generation=self.stallgeneration)
         else:
-            self.stallgeneration = 0
-            self.stallstarttime = time.time()
-            self.stalltime = 0
-            self.stallfitness = fitness
+            code = str()
+            for i in range(self.groupsize):
+                if self.candidatestatus[i] == 1:
+                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Fitness Limit')
+                elif self.candidatestatus[i] == 2:
+                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Stall Generation Limit')
+                elif self.candidatestatus[i] == 3:
+                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Diversity Limit')
+                elif self.candidatestatus[i] == 4:
+                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Stall Time Limit')
+            return True,code
         
-        # Stall Generation Limit
-        if self.stallgeneration > self.stallgenlimit:
-            return True,'Stall Generation Limit'
-
-        if self.candidates.getdiversity() < self.diversitylimit:
-            return True,'Diversity Limit'
-
-        # Stall Time Limit
-        if self.stalltimelimit is not None:
-            if self.stalltime > self.stalltimelimit:
-                return True,'Stall Time Limit'
-
-        return False,None
-
     def update(self):
-        return self.candidates.update()
+        '''
+        Evolve every generation
+        '''
+        for i in range(self.groupsize):
+            if self.candidatestatus[i] == 0:             # Candidate[i] is on Active State
+                self.candidates[i].update()
 
-    def migration(self):
-        # TODO
-        pass
+    def migrate(self):
+        '''
+        Migrate subpopulations
+        '''
+        popsize = int(self.popsize*self.migrationfraction)
+        if self.migrateforward:
+            for i in range(self.groupsize):
+                (population1,source1) = self.candidates[i].migrateout(popsize)
+                if i+1<self.groupsize:
+                    (population2,source2) = self.candidates[i+1].migrateout(popsize)
+                    self.candidates[i].migratein(source2,population2)
+                    self.candidates[i+1].migratein(source1,population1)
+                else:
+                    (population2,source2) = self.candidates[0].migrateout(popsize)
+                    self.candidates[i].migratein(source2,population2)
+                    self.candidates[0].migratein(source1,population1)
+        else:
+            for i in range(self.groupsize,-1,-1):
+                (population1,source1) = self.candidates[i].migrateout(popsize)
+                if i-1>=0:
+                    (population2,source2) = self.candidates[i-1].migrateout(popsize)
+                    self.candidates[i].migratein(source2,population2)
+                    self.candidates[i-1].migratein(source1,population1)
+                else:
+                    (population2,source2) = self.candidates[self.groupsize].migrateout(popsize)
+                    self.candidates[i].migratein(source2,population2)
+                    self.candidates[self.groupsize].migratein(source1,population1)
 
     def getcache(self):
-        return self.candidates.getallcandidates(),self.candidates.getallfitness()
+        solutions = np.zeros((self.popsize*self.groupsize,self.chromesize))
+        fitness = np.zeros(self.popsize*self.groupsize)
+        for i in range(self.groupsize):
+            solutions[(i)*self.popsize:(i+1)*self.popsize,:] = self.candidates[i].getallcandidates()
+            fitness[(i)*self.popsize:(i+1)*self.popsize] = self.candidates[i].getallfitness()
+        return solutions,fitness
 
     def getsolution(self):
-        return self.candidates.getbestcandidate()
+        solutions = np.zeros((self.groupsize,self.chromesize))
+        fitness = np.zeros(self.groupsize)
+        for i in range(self.groupsize):
+            (solutions[i],fitness[i]) = self.candidates[i].getbestcandidate()
+        bestpos = np.argmin(fitness)
+        return solutions[bestpos],fitness[bestpos]
