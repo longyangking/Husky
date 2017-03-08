@@ -9,9 +9,9 @@ Python Global Optimization Libraries combined with the AI/ML power
 + High-level automatical optimization
 
 ## Requirements
-+ Keras (Theano/Tensorflow backend)
 + Numpy
 + Scipy
++ Keras (Optional, speedup neural network)
 + Matplotlib (Optional, mainly for testing)
 
 ## Status

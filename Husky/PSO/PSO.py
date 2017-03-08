@@ -3,26 +3,34 @@
 # License: LGPL-2.1
 
 import numpy as np
+from Constraint import Constraints
+from Particle import Particle
 import Creation
 
 class PSO:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,\
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,
+        C1=0.2,C2=0.2,w=1.0,\
         timelimit=None,\
-        maxiter=300,particlesize=100,\
+        maxiter=300,particlesize=300,\
         parallelized=False,verbose=False):
         self.featuresize = nvars                # Number of variables
         self.timelimit = timelimit              # Time limit to optimize
-        self.maxgeneration = maxgeneration      # Maximum of generation
+        self.maxiter = maxiter                  # Maximum of generation
         self.constraints = Constraints()        # Nomral Constraints class
         self.particlesize = particlesize        # Size of particle swarm
         self.fitnessfunc = fitnessfunc          # Fitness function
         self.particles = None                   # Particles class
-        self.LB = LB                            # Lower Boundary
-        self.UB = UB                            # Upper Boundary
+
+        self.LB = LB
+        self.UB = UB
+
         self.IntCon = IntCon                    # Integer Constraint
         self.initparticles = initparticles      # Initial particles
         self.verbose = verbose                  # Verbose sign
-        self.tolerance = tolerance              # Optimization Tolerance
+
+        self.C1 = C1
+        self.C2 = C2
+        self.w = w
 
         self.creationfunction = Creation.Uniform
     
@@ -39,13 +47,13 @@ class PSO:
         return False
 
     def start(self):
-        #Init PSO and start to calculate, coming soon
-        #
-        #
-        self.particles = Paricle() # Coming, can not work now
-        for i in range(self.maxgeneration):
+        self.particles = Particle(func=self.fitnessfunc,num=self.particlesize,\
+                                dimension=self.featuresize,C1=self.C1,C2=self.C2,w=self.w,\
+                                LB=self.LB,UB=self.UB,initpos=self.initparticles,verbose=self.verbose) 
+
+        for i in range(self.maxiter):
             if self.verbose:
-                print '{num}th update:'.format(num=i+1)
+                print '{num}th update: '.format(num=i+1),
             if self.update():
                 if self.verbose:
                     print 'Optimization terminated: Tolerance is less than specific value {num}'.format(num=self.tolerance)
@@ -54,7 +62,10 @@ class PSO:
             print 'Optimization terminated: Maximum Generaion'
 
     def update(self):
-        return self.particles.update(tolerance=self.tolerance)
+        return self.particles.update()
+
+    def check(self):
+        pass
 
     def getsolution(self):
-        return self.particles.getresult()
+        return self.particles.getbest()
