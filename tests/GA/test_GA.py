@@ -90,6 +90,9 @@ class TestGA(unittest.TestCase):
         Test Non-linear Constraint
         '''
         pass
+
+    def testGALimit(self):
+        pass
     
 if __name__ == '__main__':
     unittest.main() 

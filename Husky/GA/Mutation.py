@@ -29,10 +29,10 @@ def Uniform(chromes,LB,UB,mutationrate,IntCon=None,preal=0.1,pint=0.2):
             chrome[IntCon] = intchrome
 
         posLB = np.where(chrome<LB)
-        chrome[posLB] = UB[posLB]        # Mutate to be UB when lower than LB
+        chrome[posLB] = LB[posLB]        # Mutate to be UB when lower than LB
 
         posUB = np.where(chrome>UB)
-        chrome[posUB] = LB[posUB]        # Mutate to be LB when larger than UB
+        chrome[posUB] = UB[posUB]        # Mutate to be LB when larger than UB
 
         newchromes[i] = chrome
 

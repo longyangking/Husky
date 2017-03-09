@@ -22,9 +22,23 @@ class GA:
 
         self.func = func                        # Function to minimize
         self.chromesize = nvars                 # Number of variants
-        self.LB = LB                            # Lower Boundary
-        self.UB = UB                            # Upper Boundary
-        self.IntCon = IntCon                    # Integer Constraint
+
+        # Lower Boundary
+        if LB is not None:
+            self.LB = np.array(LB)
+        else:
+            self.LB = LB   
+        # Upper Boundary
+        if UB is not None:
+            self.UB = np.array(UB)
+        else:
+            self.UB = UB       
+        # Integer Constraint
+        if IntCon is not None:
+            self.IntCon = np.array(IntCon)
+        else:
+            self.IntCon = IntCon 
+
         if IntCon is None:                      # Size of populations
             self.popsize = popsize              
         else:
@@ -72,7 +86,7 @@ class GA:
         self.stallstarttime = np.zeros(groupsize)
         self.stalltime = np.zeros(groupsize)
     
-    def addconstraint(self,constraintfunc,penalty=1000):
+    def addconstraint(self,constraintfunc,penalty=10):
         self.constraints.add(constraintfunc,penalty)
 
     def setparameter(self,parameter,value):
@@ -226,7 +240,7 @@ class GA:
                 continue
             
             # Calculate Stall Generation
-            averagechange = np.sqrt(np.mean(np.square(fitness-self.stallfitness[i])))
+            averagechange = np.abs(np.min(fitness)-np.min(self.stallfitness[i]))
             if averagechange < self.TolFun:
                 self.stallgeneration[i] += 1
                 self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
