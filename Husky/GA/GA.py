@@ -12,13 +12,14 @@ import Selection
 import FitnessScale
 import Crossover 
 import Mutation
+import GAoptions
 
 class GA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
         stallgenlimit=100,stalltimelimit=None,fitnesslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,diversitylimit=0.05,\
         groupsize=1,migrateforward=True,migrationfraction=0.2,migrationinterval=20,\
         elitecount=2,crossoverfraction=0.8,mutationrate=0.1,\
-        verbose=False,parallelized=False):
+        verbose=False,parallelized=False,options=None):
 
         self.func = func                        # Function to minimize
         self.chromesize = nvars                 # Number of variants
@@ -68,6 +69,10 @@ class GA:
 
         self.verbose = verbose                  # Print Computational Info
         self.parallelized = parallelized
+        if options is not None:
+            self.options = options
+        else:
+            self.options = GAoptions.GAoptions()
 
         self.candidates = list()                # Candidates
         self.candidatestatus = np.zeros(groupsize)

@@ -65,6 +65,10 @@ def Gaussian(chromes,LB,UB,mutationrate,IntCon=None,shrink=1,scale=1):
     
     return newchromes
 
+def LogisticChaoticSequence(chromes,LB,UB,mutationrate,IntCon=None):
+    # TODO This part will be done after the completement of module Optimize
+    return Uniform(chromes,LB,UB,IntCon=None)
+
 def AdaptiveFeasible(chromes,LB,UB,constraint,IntCon=None):
     '''
     Randomly mutate that are adaptive with respect to the constraints (filter the individuals in advance)

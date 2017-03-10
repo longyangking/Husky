@@ -12,6 +12,7 @@ Python Global Optimization Libraries combined with the AI/ML power
 + Numpy
 + Scipy
 + Keras (Optional, speedup neural network)
++ Scikit-learn (Optional, speedup model recognition)
 + Matplotlib (Optional, mainly for testing)
 
 ## Status

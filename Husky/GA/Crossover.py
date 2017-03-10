@@ -274,6 +274,10 @@ def Heuristic(parents,fitness,LB,UB,IntCon=None,R=1.2):
 
     return childs
 
+def LogisticChaoticSequence(parents,fitness,LB,UB,IntCon=None):
+    # TODO This part will be done after the completement of module Optimize
+    return TwoPoint(parents,fitness,LB,UB,IntCon)
+
 def Arithmetic(parents,fitness,LB,UB,constraints,IntCon=None):
     # TODO This part will be done after the completement of module Optimize
     return TwoPoint(parents,fitness,LB,UB,IntCon)

@@ -1,4 +1,6 @@
-
+# Author: Yang Long <longyang_123@yeah.net>
+#
+# License: LGPL-2.1
 
 import numpy as np
 
@@ -25,7 +27,6 @@ def Uniform(popsize,chromesize,LB,UB,IntCon=None):
         populations[i] = chrome
     
     return populations
-    
 
 def Feasible(popsize,chromesize,LB,UB,IntCon,constraints):
     # TODO
