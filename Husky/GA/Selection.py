@@ -6,10 +6,14 @@ import numpy as np
 
 # Selection function will select parents for next generation based on fitness data
 
-def Tournament(fitness,nParents=1,tournamentsize=3):
+def Tournament(fitness,nParents=1,**args):
     '''
     Choose best individual based on the Tournament (Default)
     '''
+    tournamentsize = 3
+    if args.has_key('tournamentsize'):
+        tournamentsize = args['tournamentsize']
+
     selected = np.zeros(nParents,dtype=int)
     N = np.size(fitness)
     for i in range(nParents):
@@ -18,7 +22,7 @@ def Tournament(fitness,nParents=1,tournamentsize=3):
         selected[i] = pos[np.argmax(bestindividual)]
     return selected
 
-def StochasticUniform(fitness,nParents=1):
+def StochasticUniform(fitness,nParents=1,**args):
     '''
     Choose parents based on the combination of stochastic start and uniform process
     '''
@@ -39,7 +43,7 @@ def StochasticUniform(fitness,nParents=1):
         position += stepsize
     return selected
 
-def Remainder(fitness,nParents=1):
+def Remainder(fitness,nParents=1,**args):
     '''
     Select parents based on the integer and fractional parts
     '''
@@ -78,7 +82,7 @@ def Remainder(fitness,nParents=1):
     
     return selected
 
-def Roulette(fitness,nParents=1):
+def Roulette(fitness,nParents=1,**args):
     '''
     Select parents by simulating a Roulette Wheel
     '''

@@ -9,7 +9,8 @@
 + Customed settings
 + Parallel computation
 + Plot options
-+ Automatically adaptive parameter Setting
++ Automatically adaptive parameter Setting (Intelligent?)
++ Multiple  Constraint
 
 ## Status
 Working on it based on test-driven development

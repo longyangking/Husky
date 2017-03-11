@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def Uniform(popsize,chromesize,LB,UB,IntCon=None):
+def Uniform(popsize,chromesize,LB,UB,IntCon=None,**args):
     '''
     Create Random Initial Population for GA
     '''
@@ -28,11 +28,11 @@ def Uniform(popsize,chromesize,LB,UB,IntCon=None):
     
     return populations
 
-def Feasible(popsize,chromesize,LB,UB,IntCon,constraints):
+def Feasible(popsize,chromesize,LB,UB,IntCon,**args):
     # TODO
     pass
 
-def NonlinearFeasible(popsize,chromesize,LB,UB,IntCon,constraints):
+def NonlinearFeasible(popsize,chromesize,LB,UB,IntCon,**args):
     # TODO
     pass
 

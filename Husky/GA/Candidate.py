@@ -8,7 +8,7 @@ class Candidates:
     def __init__(self,popsize,chromesize,func,constraints,IntCon,LB,UB,\
                 initpopulation,Elitecount,crossoverfraction,mutationrate,\
                 createfunction,crossoverfunction,mutationfunction,selectionfunction,fitnessscalingfunction,\
-                verbose):
+                verbose,options):
         self.verbose = verbose
 
         self.popsize = popsize
@@ -35,6 +35,8 @@ class Candidates:
         self.Elitecount = Elitecount
         self.crossoverfraction = crossoverfraction
         self.mutationrate = mutationrate
+
+        self.options = options
 
         self.createfunction = createfunction
         self.crossoverfunction = crossoverfunction

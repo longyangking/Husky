@@ -4,10 +4,20 @@
 
 import numpy as np
 
-def Laplacian(parents,fitness,LB,UB,IntCon=None,a=0,breal=0.5,bint=0.75):
+def Laplacian(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Laplacian Crossover Operator (Two parents, Two childs: Son & Girl)
     '''
+    a = 0
+    breal = 0.5
+    bint = 0.75
+    if args.has_key('a'):
+        a = args['a']
+    if args.has_key('breal'):
+        breal = args['breal']
+    if args.has_key('bint'):
+        bint = args['bint']
+
     (M,N) = np.shape(parents)
     childs = np.zeros([M,N])
     index = 0
@@ -52,7 +62,7 @@ def Laplacian(parents,fitness,LB,UB,IntCon=None,a=0,breal=0.5,bint=0.75):
 
     return childs
 
-def Scattered(parents,fitness,LB,UB,IntCon=None):
+def Scattered(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Crossover based on the random binary control vector
     '''
@@ -96,7 +106,7 @@ def Scattered(parents,fitness,LB,UB,IntCon=None):
 
     return childs
 
-def SinglePoint(parents,fitness,LB,UB,IntCon=None):
+def SinglePoint(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Crossover based on a random point
     '''
@@ -140,7 +150,7 @@ def SinglePoint(parents,fitness,LB,UB,IntCon=None):
 
     return childs
 
-def TwoPoint(parents,fitness,LB,UB,IntCon=None):
+def TwoPoint(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Crossover based on two random points (Default)
     '''
@@ -187,10 +197,14 @@ def TwoPoint(parents,fitness,LB,UB,IntCon=None):
 
     return childs
 
-def Intermediate(parents,fitness,LB,UB,IntCon=None,ratio=1.0):
+def Intermediate(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Crossover based on the intermediate evolution
     '''
+    ratio = 1.0
+    if args.has_key('ratio'):
+        ratio = args['ratio']
+
     (M,N) = np.shape(parents)
     childs = np.zeros([M,N])
     index = 0
@@ -229,10 +243,14 @@ def Intermediate(parents,fitness,LB,UB,IntCon=None,ratio=1.0):
 
     return childs
 
-def Heuristic(parents,fitness,LB,UB,IntCon=None,R=1.2):
+def Heuristic(parents,fitness,LB,UB,IntCon=None,**args):
     '''
     Evolve with the direction to better parent
     '''
+    R = 1.2
+    if args.has_key('R'):
+        R = args['R']
+
     (M,N) = np.shape(parents)
     childs = np.zeros([M,N])
     index = 0
@@ -274,10 +292,10 @@ def Heuristic(parents,fitness,LB,UB,IntCon=None,R=1.2):
 
     return childs
 
-def LogisticChaoticSequence(parents,fitness,LB,UB,IntCon=None):
+def LogisticChaoticSequence(parents,fitness,LB,UB,IntCon=None,**args):
     # TODO This part will be done after the completement of module Optimize
     return TwoPoint(parents,fitness,LB,UB,IntCon)
 
-def Arithmetic(parents,fitness,LB,UB,constraints,IntCon=None):
+def Arithmetic(parents,fitness,LB,UB,constraints,IntCon=None,**args):
     # TODO This part will be done after the completement of module Optimize
     return TwoPoint(parents,fitness,LB,UB,IntCon)

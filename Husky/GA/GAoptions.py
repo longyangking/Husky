@@ -3,6 +3,11 @@
 # License: LGPL-2.1
 
 import numpy as np
+import Creation
+import Selection
+import FitnessScale
+import Mutation
+import Crossover
 
 class GAoptions:
     '''
