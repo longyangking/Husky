@@ -59,7 +59,7 @@ class Creation:
     Set parameters for Creation Function
     '''
     def __init__(self):
-        pass
+        self.args = dict()
 
     def setparameter(self,parameter,value):
         return True
@@ -69,11 +69,12 @@ class Selection:
     Set parameters for Selection Function
     '''
     def __init__(self):
-        self.TournamentSize = 3
+        self.args = dict()
+        self.args['tournamentsize'] = 3
 
     def setparameter(self,parameter,value):
         if parameter == 'TournamentSize':
-            self.TournamentSize = value
+            self.args['tournamentsize'] = value
             return True
         return False
 
@@ -82,19 +83,20 @@ class FitnessScale:
     Set parameters for FitnessScale Function
     '''
     def __init__(self):
-        self.ProportionalFactor = 1.0
-        self.ShiftLinearRate = 2.0
-        self.TopQuality = 0.4
+        self.args = dict()
+        self.args['factor'] = 1.0
+        self.args['rate'] = 2.0
+        self.args['quality'] = 0.4
     
     def setparameter(self,parameter,value):
         if parameter == 'ProportionalFactor':
-            self.ProportionalFactor = value
+            self.args['factor'] = value
             return True
         if parameter == 'ShiftLinearRate':
-            self.ShiftLinearRate = value
+            self.args['rate'] = value
             return True
         if parameter == 'TopQuality':
-            self.TopQuality = value
+            self.args['quality'] = value
             return True
         return False
     
@@ -103,27 +105,28 @@ class Crossover:
     Set parameters for Crossover Function
     '''
     def __init__(self):
-        self.LaplacianA = 0.0
-        self.LaplacianBreal = 0.5
-        self.LaplacianBint = 0.75
-        self.IntermediateRatio = 1.0
-        self.HeuristicR = 1.2
+        self.args = dict()
+        self.args['a'] = 0.0
+        self.args['breal'] = 0.5
+        self.args['bint'] = 0.75
+        self.args['ratio'] = 1.0
+        self.args['R'] = 1.2
 
     def setparameter(self,parameter,value):
         if parameter == 'LaplacianA':
-            self.LaplacianA = value
+            self.args['a'] = value
             return True
         if parameter == 'LaplacianBreal':
-            self.LaplacianBreal = value
+            self.args['breal'] = value
             return True
         if parameter == 'LaplacianBint':
-            self.LaplacianBint = value
+            self.args['bint'] = value
             return True
         if parameter == 'IntermediateRatio':
-            self.IntermediateRatio = value
+            self.args['ratio'] = value
             return True
         if parameter == 'HeuristicR':
-            self.HeuristicR = value
+            self.args['R'] = value
             return True
         return False
 
@@ -132,22 +135,23 @@ class Mutation:
     Set parameters for Mutation Function
     '''
     def __init__(self):
-        self.UniformPreal = 0.1
-        self.UniformPint = 0.2
-        self.GaussianShrink = 1.0
-        self.GaussianScale = 1.0
+        self.args = dict()
+        self.args['preal'] = 0.1
+        self.args['pint'] = 0.2
+        self.args['shrink'] = 1.0
+        self.args['scale'] = 1.0
 
     def setparameter(self,parameter,value):
         if parameter == 'UniformPreal':
-            self.UniformPreal = value
+            self.args['preal'] = value
             return True
         if parameter == 'UniformPint':
-            self.UniformPint = value
+            self.args['pint'] = value
             return True
         if parameter == 'GaussianShrink':
-            self.GaussianShrink = value
+            self.args['shrink'] = value
             return True
         if parameter == 'GaussianScale':
-            self.GaussianScale = value
+            self.args['scale'] = value
             return True
         return False

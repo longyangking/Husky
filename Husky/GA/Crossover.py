@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def Laplacian(parents,fitness,LB,UB,IntCon=None,**args):
+def Laplacian(parents,fitness,LB,UB,IntCon,args):
     '''
     Laplacian Crossover Operator (Two parents, Two childs: Son & Girl)
     '''
@@ -62,7 +62,7 @@ def Laplacian(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def Scattered(parents,fitness,LB,UB,IntCon=None,**args):
+def Scattered(parents,fitness,LB,UB,IntCon,args):
     '''
     Crossover based on the random binary control vector
     '''
@@ -106,7 +106,7 @@ def Scattered(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def SinglePoint(parents,fitness,LB,UB,IntCon=None,**args):
+def SinglePoint(parents,fitness,LB,UB,IntCon,args):
     '''
     Crossover based on a random point
     '''
@@ -150,7 +150,7 @@ def SinglePoint(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def TwoPoint(parents,fitness,LB,UB,IntCon=None,**args):
+def TwoPoint(parents,fitness,LB,UB,IntCon,args):
     '''
     Crossover based on two random points (Default)
     '''
@@ -197,7 +197,7 @@ def TwoPoint(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def Intermediate(parents,fitness,LB,UB,IntCon=None,**args):
+def Intermediate(parents,fitness,LB,UB,IntCon,args):
     '''
     Crossover based on the intermediate evolution
     '''
@@ -243,7 +243,7 @@ def Intermediate(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def Heuristic(parents,fitness,LB,UB,IntCon=None,**args):
+def Heuristic(parents,fitness,LB,UB,IntCon,args):
     '''
     Evolve with the direction to better parent
     '''
@@ -292,10 +292,10 @@ def Heuristic(parents,fitness,LB,UB,IntCon=None,**args):
 
     return childs
 
-def LogisticChaoticSequence(parents,fitness,LB,UB,IntCon=None,**args):
+def LogisticChaoticSequence(parents,fitness,LB,UB,IntCon,args):
     # TODO This part will be done after the completement of module Optimize
     return TwoPoint(parents,fitness,LB,UB,IntCon)
 
-def Arithmetic(parents,fitness,LB,UB,constraints,IntCon=None,**args):
+def Arithmetic(parents,fitness,LB,UB,constraints,IntCon,args):
     # TODO This part will be done after the completement of module Optimize
     return TwoPoint(parents,fitness,LB,UB,IntCon)

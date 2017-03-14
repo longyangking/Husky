@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def Uniform(chromes,LB,UB,mutationrate,IntCon=None,**args):
+def Uniform(chromes,LB,UB,mutationrate,IntCon,args):
     '''
     Uniform random mutation (Default)
     '''
@@ -45,7 +45,7 @@ def Uniform(chromes,LB,UB,mutationrate,IntCon=None,**args):
 
     return newchromes
 
-def Gaussian(chromes,LB,UB,mutationrate,IntCon=None,**args):
+def Gaussian(chromes,LB,UB,mutationrate,IntCon,args):
     '''
     Mutate based on the standard deviation
     '''
@@ -79,13 +79,13 @@ def Gaussian(chromes,LB,UB,mutationrate,IntCon=None,**args):
     
     return newchromes
 
-def LogisticChaoticSequence(chromes,LB,UB,mutationrate,IntCon=None,**args):
+def LogisticChaoticSequence(chromes,LB,UB,mutationrate,IntCon,args):
     # TODO This part will be done after the completement of module Optimize
-    return Uniform(chromes,LB,UB,IntCon=None)
+    return Uniform(chromes,LB,UB,IntCon)
 
-def AdaptiveFeasible(chromes,LB,UB,mutationrate,IntCon=None,**args):
+def AdaptiveFeasible(chromes,LB,UB,mutationrate,IntCon,args):
     '''
     Randomly mutate that are adaptive with respect to the constraints (filter the individuals in advance)
     '''
     # TODO This part will be done after the completement of module Optimize
-    return Uniform(chromes,LB,UB,IntCon=None)
+    return Uniform(chromes,LB,UB,IntCon)

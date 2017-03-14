@@ -66,6 +66,8 @@ def fun6(x):
         + 50*(1-x[2]/(2*x[2]-1))/(0.8*(1-np.exp(-0.4*x[0])))
 
 if __name__=='__main__':
+    print '-'*50
+
     LB = [0,0]
     UB = [1.6,1]
     IntCon = [1]
@@ -74,6 +76,7 @@ if __name__=='__main__':
     ga.start()
     print 'The global optimal is (0.5,1) with value 2'
     print 'Fun 1 answer: ',ga.getsolution()
+    print '-'*50
 
     LB = [0.5,0]
     UB = [1.5,1]
@@ -83,6 +86,7 @@ if __name__=='__main__':
     ga.start()
     print 'The global optimal is (1.35,1) with value 2.1'
     print 'Fun 2 answer: ',ga.getsolution()
+    print '-'*50
 
     LB = [13,0]
     UB = [100,100]
@@ -91,6 +95,7 @@ if __name__=='__main__':
     ga.start()
     print 'The global optimal is (14,0.8) with value -6961'
     print 'Fun 3 answer: ',ga.getsolution()
+    print '-'*50
 
     LB = [0,0,0]
     UB = [10,10,10]
@@ -100,6 +105,7 @@ if __name__=='__main__':
     ga.start()
     print 'The global optimal is (2,0,5) with value -68'
     print 'Fun 4 answer: ',ga.getsolution()
+    print '-'*50
 
     LB = [0,0,0,0]
     UB = [1,1,1,1]
@@ -109,6 +115,7 @@ if __name__=='__main__':
     ga.start()
     print 'The global optimal is (0,0,1,1) with value -6'
     print 'Fun 5 answer: ',ga.getsolution()
+    print '-'*50
 
     LB = [0,0,0]
     UB = [10,10,1]

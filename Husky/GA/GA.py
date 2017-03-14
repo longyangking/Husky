@@ -166,7 +166,7 @@ class GA:
                                         mutationfunction=self.mutationfunction,\
                                         selectionfunction=self.selectionfunction,\
                                         fitnessscalingfunction=self.fitnessscalingfunction,\
-                                        verbose=self.verbose))
+                                        verbose=self.verbose,options=self.options))
             self.candidatestatus[i] = 0
             self.stallfitness.append(None)
         

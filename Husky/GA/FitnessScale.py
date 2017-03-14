@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def Rank(fitness,**args):
+def Rank(fitness,args):
     '''
     Scale the raw scores based on the rank of each individual (Default)
     '''
@@ -14,7 +14,7 @@ def Rank(fitness,**args):
     scaledfitness[pos] = 1.0/np.square(np.linspace(1,popsize,popsize))
     return scaledfitness
 
-def Proportional(finess,**args):
+def Proportional(finess,args):
     '''
     Scale the individual proportional to its raw fitness score
     '''
@@ -28,7 +28,7 @@ def Proportional(finess,**args):
     scaledfitness[pos] = factor*np.linspace(1,popsize,popsize)
     return scaledfitness
 
-def ShiftLinear(finess,**args):
+def ShiftLinear(finess,args):
     '''
     Scale the raw scores so that the expectation of the fittest individuals is
     equal to a constant multiplied by the average score.
@@ -46,7 +46,7 @@ def ShiftLinear(finess,**args):
             scaledfitness[pos[:i]] = np.linspace(1,i,i)
             return scaledfitness
 
-def Top(fitness,**args):
+def Top(fitness,args):
     '''
     Scale the top individuals equally
     '''

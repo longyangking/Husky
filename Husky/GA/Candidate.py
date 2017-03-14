@@ -10,7 +10,7 @@ class Candidates:
                 createfunction,crossoverfunction,mutationfunction,selectionfunction,fitnessscalingfunction,\
                 verbose,options):
         self.verbose = verbose
-
+        self.options = options
         self.popsize = popsize
         self.chromesize = chromesize
         self.func = func
@@ -27,7 +27,8 @@ class Candidates:
             self.UB = 10.0*np.ones(chromesize)
 
         if initpopulation is None:
-            self.populations = createfunction(popsize=popsize,chromesize=chromesize,LB=self.LB,UB=self.UB,IntCon=IntCon)
+            self.populations = createfunction(popsize=popsize,chromesize=chromesize,\
+                            LB=self.LB,UB=self.UB,IntCon=IntCon,args=self.options.Creation.args)
             if self.verbose:
                 print('Initial Populations have been generated...')
         else:
@@ -36,7 +37,7 @@ class Candidates:
         self.crossoverfraction = crossoverfraction
         self.mutationrate = mutationrate
 
-        self.options = options
+        
 
         self.createfunction = createfunction
         self.crossoverfunction = crossoverfunction
@@ -58,16 +59,16 @@ class Candidates:
                 + self.constraints.fitness(self.populations[i])
             self.fitness[i] = self.func(self.populations[i])
         # Sacle the raw fitness into scaled fitness
-        self.scaledfitness = self.fitnessscalingfunction(rawfitness)
+        self.scaledfitness = self.fitnessscalingfunction(rawfitness,args=self.options.FitnessScale.args)
 
     def crossover(self):
         '''
         Crossover Operation
         ''' 
         nParents = int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
-        parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents)
+        parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents,args=self.options.Selection.args)
         childs = self.crossoverfunction(parents=self.populations[parentindexs],fitness=self.scaledfitness,\
-                LB=self.LB,UB=self.UB,IntCon=self.IntCon)
+                LB=self.LB,UB=self.UB,IntCon=self.IntCon,args=self.options.Crossover.args)
         return childs
 
     def mutation(self):
@@ -75,9 +76,9 @@ class Candidates:
         Mutation Operation
         '''
         nParents = self.popsize - self.Elitecount - int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
-        parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents)
+        parentindexs = self.selectionfunction(fitness=self.scaledfitness,nParents=nParents,args=self.options.Selection.args)
         childs = self.mutationfunction(chromes=self.populations[parentindexs],\
-                    LB=self.LB,UB=self.UB,IntCon=self.IntCon,mutationrate=self.mutationrate)
+                    LB=self.LB,UB=self.UB,IntCon=self.IntCon,mutationrate=self.mutationrate,args=self.options.Mutation.args)
         return childs
     
     def elite(self):
