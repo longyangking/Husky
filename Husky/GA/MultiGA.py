@@ -6,12 +6,8 @@ import numpy as np
 import time
 
 from Constraint import Constraints
-from Candidate import Candidates
-import Creation
-import Selection
-import FitnessScale
-import Crossover 
-import Mutation
+from MultiCandidate import MultiCandidates
+import MultiUtils
 
 class MultiGA:
     '''
@@ -20,7 +16,7 @@ class MultiGA:
     def __init__(self,funcs,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
         stallgenlimit=100,stalltimelimit=None,fitnesslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,diversitylimit=0.05,\
         groupsize=1,migrateforward=True,migrationfraction=0.2,migrationinterval=20,\
-        elitecount=2,crossoverfraction=0.8,mutationrate=0.1,\
+        paretofraction=0.35,crossoverfraction=0.8,mutationrate=0.1,\
         verbose=False,parallelized=False,options=None):
 
         self.funcs = funcs                      # Function to minimize
@@ -71,18 +67,21 @@ class MultiGA:
 
         self.verbose = verbose                  # Print Computational Info
         self.parallelized = parallelized
-        self.options = options
+        if options is not None:
+            self.options = options
+        else:
+            self.options = MultiUtils.MultiGAoptions()
 
         self.candidates = list()                # Candidates
         self.candidatestatus = np.zeros(groupsize)
         self.constraints = Constraints()        # Constraints
 
         # Default Settings
-        self.createfunction = Creation.Uniform
-        self.crossoverfunction = Crossover.TwoPoint
-        self.mutationfunction = Mutation.Uniform
-        self.fitnessscalingfunction = FitnessScale.Rank
-        self.selectionfunction = Selection.Tournament
+        self.createfunction = MultiUtils.Creation.Uniform
+        self.crossoverfunction = MultiUtils.Crossover.TwoPoint
+        self.mutationfunction = MultiUtils.Mutation.Uniform
+        self.fitnessscalingfunction = MultiUtils.FitnessScale.Rank
+        self.selectionfunction = MultiUtils.Selection.Tournament
 
         # Stall Limit
         self.stallfitness = list()
