@@ -82,6 +82,7 @@ class MultiGA:
         self.mutationfunction = MultiUtils.Mutation.Uniform
         self.fitnessscalingfunction = MultiUtils.FitnessScale.Rank
         self.selectionfunction = MultiUtils.Selection.Tournament
+        self.distancefunction = MultiUtils.Pareto.FastNonDominatedSorting
 
         # Stall Limit
         self.stallfitness = list()
@@ -155,7 +156,7 @@ class MultiGA:
         '''
         starttime = time.time()
         for i in range(self.groupsize):
-            self.candidates.append(Candidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
+            self.candidates.append(MultiCandidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
                                         constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,\
                                         initpopulation=self.initpopulation,Elitecount=self.elitecount,\
                                         crossoverfraction=self.crossoverfraction,mutationrate=self.mutationrate,\
@@ -164,6 +165,7 @@ class MultiGA:
                                         mutationfunction=self.mutationfunction,\
                                         selectionfunction=self.selectionfunction,\
                                         fitnessscalingfunction=self.fitnessscalingfunction,\
+                                        distancefunction=self.distancefunction,\
                                         verbose=self.verbose))
             self.candidatestatus[i] = 0
             self.stallfitness.append(None)
