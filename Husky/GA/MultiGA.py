@@ -13,14 +13,15 @@ class MultiGA:
     '''
     NSGA-II
     '''
-    def __init__(self,funcs,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
-        stallgenlimit=100,stalltimelimit=None,fitnesslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,diversitylimit=0.05,\
+    def __init__(self,func,targetsize,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
+        stallgenlimit=100,stalltimelimit=None,objectiveslimit=None,timelimit=None,TolCon=1.0*10**-6,TolFun=1.0*10**-6,diversitylimit=0.05,\
         groupsize=1,migrateforward=True,migrationfraction=0.2,migrationinterval=20,\
         paretofraction=0.35,crossoverfraction=0.8,mutationrate=0.1,\
         verbose=False,parallelized=False,options=None):
 
-        self.funcs = funcs                      # Function to minimize
+        self.func = func                      # Function to minimize
         self.chromesize = nvars                 # Number of variants
+        self.targetsize = targetsize
 
         # Lower Boundary
         if LB is not None:
@@ -47,7 +48,11 @@ class MultiGA:
         
         self.stallgenlimit = stallgenlimit
         self.stalltimelimit = stalltimelimit
-        self.fitnesslimit = fitnesslimit
+        if objectiveslimit is not None:
+            self.objectiveslimit = np.array(objectiveslimit)
+        else:
+            self.objectiveslimit = objectiveslimit
+
         self.timelimit = timelimit              # Time Limit to run (in unit of seconds)
         self.TolCon = TolCon
         self.TolFun = TolFun
@@ -58,10 +63,8 @@ class MultiGA:
         self.migrationfraction = migrationfraction
         self.migrationinterval = migrationinterval
 
-        if IntCon is None:                      # Elite Count
-            self.elitecount = elitecount
-        else:
-            self.elitecount = np.min([np.max([nvars,2]),5])
+        
+        self.paretofraction = paretofraction
         self.crossoverfraction = crossoverfraction
         self.mutationrate = mutationrate
 
@@ -70,7 +73,7 @@ class MultiGA:
         if options is not None:
             self.options = options
         else:
-            self.options = MultiUtils.MultiGAoptions()
+            self.options = MultiUtils.MultiGAoptions.MultiGAoptions()
 
         self.candidates = list()                # Candidates
         self.candidatestatus = np.zeros(groupsize)
@@ -85,7 +88,7 @@ class MultiGA:
         self.distancefunction = MultiUtils.Pareto.FastNonDominatedSorting
 
         # Stall Limit
-        self.stallfitness = list()
+        self.stallobjectives = list()
         self.stallgeneration = np.zeros(groupsize)
         self.stallstarttime = np.zeros(groupsize)
         self.stalltime = np.zeros(groupsize)
@@ -156,9 +159,9 @@ class MultiGA:
         '''
         starttime = time.time()
         for i in range(self.groupsize):
-            self.candidates.append(MultiCandidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,\
+            self.candidates.append(MultiCandidates(popsize=self.popsize,chromesize=self.chromesize,func=self.func,targetsize=self.targetsize,\
                                         constraints=self.constraints,IntCon=self.IntCon,LB=self.LB,UB=self.UB,\
-                                        initpopulation=self.initpopulation,Elitecount=self.elitecount,\
+                                        initpopulation=self.initpopulation,paretofraction=self.paretofraction,\
                                         crossoverfraction=self.crossoverfraction,mutationrate=self.mutationrate,\
                                         createfunction=self.createfunction,\
                                         crossoverfunction=self.crossoverfunction,\
@@ -166,9 +169,9 @@ class MultiGA:
                                         selectionfunction=self.selectionfunction,\
                                         fitnessscalingfunction=self.fitnessscalingfunction,\
                                         distancefunction=self.distancefunction,\
-                                        verbose=self.verbose))
+                                        verbose=self.verbose,options=self.options))
             self.candidatestatus[i] = 0
-            self.stallfitness.append(None)
+            self.stallobjectives.append(None)
         
         if self.maxgeneration is not None:
             for i in range(self.maxgeneration):
@@ -232,21 +235,22 @@ class MultiGA:
         '''
         activecount = 0
         for i in range(self.groupsize):
-            fitness = self.candidates[i].getallfitness()
+            objectives = self.candidates[i].getallobjectives()
             
-            # Fitness Limit
-            if self.fitnesslimit is not None:
-                if np.min(fitness) < self.fitnesslimit:
-                    self.candidatestatus[i] = 1             # Fitness Limit
+            # Objectives Limit
+            if self.objectiveslimit is not None:
+                if np.sum(np.min(objectives,axis=0) < self.objectiveslimit) == sself.targetsize:
+                    self.candidatestatus[i] = 1             # Objectives Limit
             
-            if self.stallfitness[i] is None:
-                self.stallfitness[i] = fitness
+            if self.stallobjectives[i] is None:
+                self.stallobjectives[i] = objectives
                 activecount += 1
                 continue
             
             # Calculate Stall Generation
-            averagechange = np.abs(np.min(fitness)-np.min(self.stallfitness[i]))
-            if averagechange < self.TolFun:
+            averagechange = np.abs(np.min(objectives,axis=0)-np.min(self.stallobjectives[i],axis=0))
+            base = np.abs(np.min(objectives,axis=0))
+            if np.sum(averagechange < self.TolFun*base) == self.targetsize:
                 self.stallgeneration[i] += 1
                 self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
                 #if self.verbose:
@@ -255,14 +259,14 @@ class MultiGA:
                 self.stallgeneration[i] = 0
                 self.stallstarttime[i] = time.time()
                 self.stalltime[i] = 0
-                self.stallfitness[i] = fitness
+                self.stallobjectives[i] = objectives
             
             # Stall Generation Limit
             if self.stallgeneration[i] > self.stallgenlimit:
                 self.candidatestatus[i] = 2                 # Stall Gen Limit
                 
-            if self.candidates[i].getdiversity() < self.diversitylimit:
-                self.candidatestatus[i] = 3                 # Diversity Limit
+            #if self.candidates[i].getdiversity() < self.diversitylimit:
+            #    self.candidatestatus[i] = 3                 # Diversity Limit
 
             # Stall Time Limit
             if self.stalltimelimit is not None:
@@ -278,7 +282,7 @@ class MultiGA:
             code = str()
             for i in range(self.groupsize):
                 if self.candidatestatus[i] == 1:
-                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Fitness Limit')
+                    code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Objectives Limit')
                 elif self.candidatestatus[i] == 2:
                     code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Stall Generation Limit')
                 elif self.candidatestatus[i] == 3:
@@ -325,16 +329,20 @@ class MultiGA:
 
     def getcache(self):
         solutions = np.zeros((self.popsize*self.groupsize,self.chromesize))
-        fitness = np.zeros(self.popsize*self.groupsize)
+        objectives = np.zeros(self.popsize*self.groupsize,self.targetsize)
         for i in range(self.groupsize):
             solutions[(i)*self.popsize:(i+1)*self.popsize,:] = self.candidates[i].getallcandidates()
-            fitness[(i)*self.popsize:(i+1)*self.popsize] = self.candidates[i].getallfitness()
-        return solutions,fitness
+            objectives[(i)*self.popsize:(i+1)*self.popsize,:] = self.candidates[i].getallobjectives()
+        return solutions,objectives
 
     def getsolution(self):
-        solutions = np.zeros((self.groupsize,self.chromesize))
-        fitness = np.zeros(self.groupsize)
+        solutions = list()
+        objectives = list()
         for i in range(self.groupsize):
-            (solutions[i],fitness[i]) = self.candidates[i].getbestcandidate()
-        bestpos = np.argmin(fitness)
-        return solutions[bestpos],fitness[bestpos]
+            (solution,objective) = self.candidates[i].getfrontier()
+            popsize = np.size(solution,axis=0)
+            for j in range(popsize):
+                solutions.append(solution[j])
+                objectives.append(objective[j])
+
+        return np.array(solutions),np.array(objectives)

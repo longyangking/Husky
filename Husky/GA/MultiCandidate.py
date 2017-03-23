@@ -3,6 +3,7 @@
 # License:  LGPL-2.1
 
 import numpy as np
+import MultiUtils
 
 class MultiCandidates:
     def __init__(self,popsize,chromesize,func,targetsize,constraints,IntCon,LB,UB,\
@@ -44,7 +45,7 @@ class MultiCandidates:
         self.mutationfunction = mutationfunction
         self.selectionfunction = selectionfunction
         self.fitnessscalingfunction = fitnessscalingfunction
-        self.distancefunction = distantfunction
+        self.distancefunction = distancefunction
     
         self.fitness = np.zeros((popsize,targetsize))   # Fitness = Objective + Constraint
         self.objectives = np.zeros((popsize,targetsize))
@@ -58,19 +59,19 @@ class MultiCandidates:
         '''
         rawfitness = np.zeros((self.popsize,self.targetsize))
         for i in range(self.popsize):
-            rawfitness[i] = self.func(self.populations[i]) \
+            rawfitness[i] = np.array(self.func(self.populations[i])) \
                 + self.constraints.fitness(self.populations[i])*np.ones(self.targetsize)
             self.objectives[i] = self.func(self.populations[i])
     
-        self.fitness = self.fitnessscalingfunction(rawfitness)      # Scale the fitness
+        self.fitness = self.fitnessscalingfunction(rawfitness,args=self.options.FitnessScale.args)      # Scale the fitness
 
-        self.rank,self.distance = self.distancefunction(self.fitness,args=self.options.Distance.args)
+        self.rank,self.distance = self.distancefunction(self.fitness,args=self.options.Pareto.args)
 
     def crossover(self):
         '''
         Crossover Operation
         ''' 
-        nParents = int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
+        nParents = int(1.0*(1.0 - self.paretofraction)*self.popsize*self.crossoverfraction)
         parentindexs = self.selectionfunction(rank=self.rank,distance=self.distance,nParents=nParents,args=self.options.Selection.args)
         childs = self.crossoverfunction(parents=self.populations[parentindexs],rank=self.rank,distance=self.distance,\
                 LB=self.LB,UB=self.UB,IntCon=self.IntCon,args=self.options.Crossover.args)
@@ -80,7 +81,7 @@ class MultiCandidates:
         '''
         Mutation Operation
         '''
-        nParents = self.popsize - self.Elitecount - int(1.0*(self.popsize - self.Elitecount)*self.crossoverfraction)
+        nParents = self.popsize - int(self.popsize*self.paretofraction) - int(1.0*(1.0 - self.paretofraction)*self.popsize*self.crossoverfraction)
         parentindexs = self.selectionfunction(rank=self.rank,distance=self.distance,nParents=nParents,args=self.options.Selection.args)
         childs = self.mutationfunction(chromes=self.populations[parentindexs],rank=self.rank,distance=self.distance,\
                     LB=self.LB,UB=self.UB,IntCon=self.IntCon,mutationrate=self.mutationrate,args=self.options.Mutation.args)
@@ -107,7 +108,7 @@ class MultiCandidates:
         elitechilds = self.elite()
 
         if self.verbose:
-            print 'Elite({num}) -> '.format(num=np.size(elitechilds,axis=0)),
+            print 'Pareto({num}) -> '.format(num=np.size(elitechilds,axis=0)),
         crossoverchilds = self.crossover()
 
         if self.verbose:
@@ -139,11 +140,15 @@ class MultiCandidates:
         return True
 
     def getfrontier(self):
-        frontier = np.where(self.rank==0)
-        return self.populations[frontier],self.objective[frontier]
+        frontier = MultiUtils.Pareto.frontier(self.rank,self.distance,int(self.popsize*self.paretofraction))
+        return self.populations[frontier],self.objectives[frontier]
 
     def getallcandidates(self):
         return self.populations
 
     def getallobjectives(self):
         return self.objectives
+
+    def getdiversity(self):
+        # TODO Adjust the rate of mutation based on the diversity in real time
+        return 0

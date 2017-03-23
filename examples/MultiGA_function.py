@@ -18,21 +18,35 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def fun1(x):
-    f1 = x**2
-    f2 = (x-2)**2
+    f1 = x[0]**2
+    f2 = (x[0]-2)**2
     return f1,f2
 
 def fun2(x):    
-    f1 = 1 - np.exp(-np.sum(np.square(x - 1.0/np.sqrt(3))))
-    f2 = 1 - np.exp(-np.sum(np.square(x + 1.0/np.sqrt(3))))
+    f1 = 1 - np.exp(-np.sum(np.square(x[0] - 1.0/np.sqrt(3))))
+    f2 = 1 - np.exp(-np.sum(np.square(x[0] + 1.0/np.sqrt(3))))
     return f1,f2
 
 if __name__=='__main__':
-    LB = [-10**3]
-    UB = [10**3]
+    print '1th Function Optimizing ...'
+    LB = [-10]
+    UB = [10]
     multiga = GA.MultiGA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB)
     multiga.start()
     solutions,objectives = multiga.getsolution()
-    plt.scatter(objectives[:,0],objectives[:,1])
+
+    plt.figure()
+    plt.scatter(objectives[:10,0],objectives[:10,1])
+
+    print '2th Function Optimizing ...'
+    LB = [-10]
+    UB = [10]
+    multiga = GA.MultiGA(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB)
+    multiga.start()
+    solutions,objectives = multiga.getsolution()
+
+    plt.figure()
+    plt.scatter(objectives[:10,0],objectives[:10,1])
+
     plt.show()
     

@@ -1,3 +1,5 @@
+import numpy as np
+
 def FastNonDominatedSorting(fitness,args):
     '''
     Fast non-dominated sorting
@@ -37,7 +39,7 @@ def FastNonDominatedSorting(fitness,args):
     index = 0
     while len(fronts[index]) > 0:
         nextfront = list()
-        for i in range(fronts[index]):
+        for i in range(len(fronts[index])):
             for j in dominatedindividuals[i]:
                 dominatecount[j] -= 1
                 if dominatecount[j] == 0:
@@ -53,7 +55,7 @@ def FastNonDominatedSorting(fitness,args):
             frontnum = len(front)
             if frontnum > 0:
                 for k in range(targetsize):
-                    frontfitness = [fitness[k] for i in front]
+                    frontfitness = [fitness[i,k] for i in front]
                     sortindex = np.argsort(frontfitness)
                     maxfrontfitness = frontfitness[sortindex[frontnum-1]]
                     minfrontfitness = frontfitness[sortindex[0]]
@@ -73,43 +75,16 @@ def FastNonDominatedSorting(fitness,args):
     
     return rank,distance
 
-def Frontier(rank,distance,popsize):
+def frontier(rank,distance,nChildren):
     '''
     Select top number of Pareto frontiers
     '''
-    ## TODO
-    individuals = list()
-    frontindex = 0
-    tokensize = 0
-    while tokensize + len(self.fronts[frontindex]) <= self.popsize:
-        popsize = len(self.fronts[frontindex])
-        for i in range(popsize):
-            individuals.append(self.individuals[self.fronts[frontindex][i]])
-        tokensize += popsize
-
-    lastindividuals = list()
-    for i in range(len(self.fronts[frontindex]))
-        lastindividuals.append(self.individuals[self.fronts[frontindex][i]])
-    lastindividuals = sorted(lastindividuals,cmp=self.individuals[0].compare)
-    individuals.extend(lastindividuals[:self.popsize-len(individuals)])
-
-    self.individuals = individuals
-
-#def crowdingoperator(A,B):
-#    rankA = A[0]
-#    rankB = B[0]
-#    crowdingdistanceA = A[1]
-#    crowdingdistanceB = B[1]
-#
-#    if (rankA < rankB) or \
-#        ((rankA == rankB) and (crowdingdistanceA > crowdingdistanceB)):
-#        return True
-#    else:
-#        return False
+    frontier = crowdingoperator(rank,distance)
+    return frontier[:nChildren]
 
 def crowdingoperator(rank,distance):
     '''
     Sort data by crowding operator
     '''
     data = np.array(zip(rank,-distance),dtype=[('rank', int), ('distance', float)])
-    return np.argsort(x, order=('rank','distance'))
+    return np.argsort(data, order=('rank','distance'))

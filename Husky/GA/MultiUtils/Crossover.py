@@ -163,8 +163,12 @@ def TwoPoint(parents,rank,distance,LB,UB,IntCon,args):
         while fatherindex == motherindex:
             motherindex = np.random.randint(M)
         
-        start = np.random.randint(N-1)
-        end = np.random.randint(start,N)
+        if N > 1:
+            start = np.random.randint(N-1)
+            end = np.random.randint(start,N)
+        else:
+            start = N
+            end = N
 
         father = parents[fatherindex]
         mother = parents[motherindex]
