@@ -9,8 +9,8 @@ Python Global Optimization Libraries combined with the AI/ML power
 + High-level automatical optimization
 + Multi-Objective optimization
 
-![Demo1](file:///E:/Github/Husky/examples/MultiGA/func1.png =400x300) 
-![Demo2](file:///E:/Github/Husky/examples/MultiGA/func2.png =400x300)
+![](../Husky/examples/MultiGA/func1.png =400x300) 
+![](../Husky/examples/MultiGA/func2.png =400x300)
 
 ## Requirements
 + Numpy
