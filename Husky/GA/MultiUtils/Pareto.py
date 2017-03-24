@@ -1,3 +1,7 @@
+# Author: Yang Long <longyang_123@yeah.net>
+#
+# License: LGPL-2.1
+
 import numpy as np
 
 def FastNonDominatedSorting(fitness,args):
@@ -62,16 +66,21 @@ def FastNonDominatedSorting(fitness,args):
                     posmax = front[sortindex[frontnum-1]]
                     posmin = front[sortindex[0]]
                         
-                    distance[posmax] = maxfrontfitness
-                    distance[posmin] = minfrontfitness
-                        
-                    # TODO Check!
+                    #distance[posmax] = maxfrontfitness
+                    #distance[posmin] = minfrontfitness
+                    Inf = 10.0*maxfrontfitness
+
+                    distance[posmax] = Inf
+                    distance[posmin] = Inf
+                    
                     for i in range(1,len(sortindex)-1):
                         pos = front[sortindex[i]]
                         left = front[sortindex[i-1]]
                         right = front[sortindex[i+1]]
-                        distance[pos] = \
-                                (distance[right]-distance[left])/(maxfrontfitness-minfrontfitness)
+                        if maxfrontfitness == minfrontfitness:
+                            distance[pos] = Inf
+                        else:
+                            distance[pos] = distance[right]-distance[left]#/(maxfrontfitness-minfrontfitness)
     
     return rank,distance
 

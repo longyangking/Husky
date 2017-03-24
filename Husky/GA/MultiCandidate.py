@@ -57,12 +57,15 @@ class MultiCandidates:
         '''
         Calculation of Fitness
         '''
-        rawfitness = np.zeros((self.popsize,self.targetsize))
-        for i in range(self.popsize):
+        (popsize,chromesize) = self.populations.shape
+        rawfitness = np.zeros((popsize,self.targetsize))
+        objectives = np.zeros((popsize,self.targetsize))
+        for i in range(popsize):
             rawfitness[i] = np.array(self.func(self.populations[i])) \
                 + self.constraints.fitness(self.populations[i])*np.ones(self.targetsize)
-            self.objectives[i] = self.func(self.populations[i])
-    
+            objectives[i] = self.func(self.populations[i])
+        
+        self.objectives = objectives
         self.fitness = self.fitnessscalingfunction(rawfitness,args=self.options.FitnessScale.args)      # Scale the fitness
 
         self.rank,self.distance = self.distancefunction(self.fitness,args=self.options.Pareto.args)
@@ -118,10 +121,15 @@ class MultiCandidates:
         if self.verbose:
             print 'Mutate({num}) -> '.format(num=np.size(mutationchilds,axis=0)),
             
-        self.populations = np.concatenate((elitechilds,crossoverchilds,mutationchilds))
-        #self.populations = self.populations[np.argsort(self.fitness)[:self.popsize]]
-        # Whether allow the competetion between parents and childs
+        self.populations = np.concatenate((self.populations,elitechilds,crossoverchilds,mutationchilds))
         self.fit()
+
+        nextgenerations = MultiUtils.Pareto.frontier(self.rank,self.distance,self.popsize)
+        self.populations = self.populations[nextgenerations]
+        self.rank = self.rank[nextgenerations]
+        self.distance = self.distance[nextgenerations]
+        self.objectives = self.objectives[nextgenerations]
+        
         if self.verbose:
             print 'Finished!'
 
@@ -140,7 +148,8 @@ class MultiCandidates:
         return True
 
     def getfrontier(self):
-        frontier = MultiUtils.Pareto.frontier(self.rank,self.distance,int(self.popsize*self.paretofraction))
+        self.fit()
+        frontier = np.where(self.rank==0)
         return self.populations[frontier],self.objectives[frontier]
 
     def getallcandidates(self):

@@ -11,7 +11,7 @@
 #
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import Husky.GA as GA
 import numpy as np
@@ -31,12 +31,15 @@ if __name__=='__main__':
     print '1th Function Optimizing ...'
     LB = [-10]
     UB = [10]
-    multiga = GA.MultiGA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB)
+    multiga = GA.MultiGA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,maxgeneration=20)
     multiga.start()
     solutions,objectives = multiga.getsolution()
 
     plt.figure()
-    plt.scatter(objectives[:10,0],objectives[:10,1])
+    plt.scatter(objectives[:,0],objectives[:,1])
+    plt.xlabel(r'$F_1$')
+    plt.ylabel(r'$F_2$')
+    plt.title('Pareto Front')
 
     print '2th Function Optimizing ...'
     LB = [-10]
@@ -46,7 +49,10 @@ if __name__=='__main__':
     solutions,objectives = multiga.getsolution()
 
     plt.figure()
-    plt.scatter(objectives[:10,0],objectives[:10,1])
+    plt.scatter(objectives[:,0],objectives[:,1])
+    plt.xlabel(r'$F_1$')
+    plt.ylabel(r'$F_2$')
+    plt.title('Pareto Front')
 
     plt.show()
     
