@@ -9,8 +9,8 @@ Python Global Optimization Libraries combined with the AI/ML power
 + High-level automatical optimization
 + Multi-Objective optimization
 
-<img src="./examples/MultiGA/func1.jpg" width=400 height=300 />
-<img src="./examples/MultiGA/func2.jpg" width=400 height=300 />
+<img src="./examples/MultiGA/func1.jpg" height="30%" />
+<img src="./examples/MultiGA/func2.jpg" height="30%" />
 
 ## Requirements
 + Numpy
