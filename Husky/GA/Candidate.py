@@ -3,6 +3,7 @@
 # License:  LGPL-2.1
 
 import numpy as np
+import random
 
 class Candidates:
     def __init__(self,popsize,chromesize,func,constraints,IntCon,LB,UB,\
@@ -120,7 +121,8 @@ class Candidates:
         '''
         Select members to migrate out from this populations
         '''
-        selected = np.random.randint(self.popsize,size=popsize)
+        #selected = np.random.randint(self.popsize,size=popsize)
+        selected = np.array(random.sample(range(self.popsize),popsize))
         return self.populations[selected],selected
 
     def migratein(self,position,populations):

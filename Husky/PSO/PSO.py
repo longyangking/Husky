@@ -9,10 +9,12 @@ import Creation
 
 class PSO:
     def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initparticles=None,
-        C1=0.2,C2=0.2,w=1.0,\
-        timelimit=None,\
+        C1=0.2,C2=0.2,w=1.0,minfractionneighbors=0.25,\
+        timelimit=None,stalliterlimit=50,stalltimelimit=None,TolFun=1.0*10**-6,\
+        groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,\
         maxiter=300,particlesize=300,\
-        parallelized=False,verbose=False):
+        parallelized=False,verbose=False,options=None):
+
         self.featuresize = nvars                # Number of variables
         self.timelimit = timelimit              # Time limit to optimize
         self.maxiter = maxiter                  # Maximum of generation
@@ -23,7 +25,6 @@ class PSO:
 
         self.LB = LB
         self.UB = UB
-
         self.IntCon = IntCon                    # Integer Constraint
         self.initparticles = initparticles      # Initial particles
         self.verbose = verbose                  # Verbose sign
@@ -31,7 +32,19 @@ class PSO:
         self.C1 = C1
         self.C2 = C2
         self.w = w
+        self.minfractionneighbors = minfractionneighbors
 
+        self.stalliterlimit = stalliterlimit
+        self.stalltimelimit = stalltimelimit
+        self.TolFun = TolFun
+
+        self.groupsize = groupsize
+        self.exchangeforward = exchangeforward
+        self.exchangefraction = exchangefraction
+        self.exchangeinterval = exchangeinterval
+
+        self.parallelized = parallelized
+        self.options = options
         self.creationfunction = Creation.Uniform
     
     def addconstraint(self,constraintfunc,penalty=1000):
@@ -66,6 +79,10 @@ class PSO:
 
     def check(self):
         pass
+
+    def exchange(self):
+        
+    def getcache(self):
 
     def getsolution(self):
         return self.particles.getbest()

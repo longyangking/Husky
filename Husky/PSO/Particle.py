@@ -5,50 +5,50 @@
 import numpy as np
 
 class Particle:
-    def __init__(self,func,num,dimension,C1,C2,w,LB,UB,IntCon=None,\
-        Vmin=None,Vmax=None,initpos=None,initbestpos=None,initvelocity=None,\
-        initgroupbestpos=None,creationfunction=None,\
-        verbose=False):
+    def __init__(self,func,num,dimension,C1,C2,w,LB,UB,IntCon,constraints,\
+        Vmin,Vmax,initpos,initbestpos,initvelocity,initgroupbestpos,\
+        creationfunction,\
+        parallelized,verbose,options):
 
         self.func = func
         self.num = num
         self.dimension = dimension
 
         self.C1 = C1
-        self.C2 = C2   
+        self.C2 = C2
         self.w = w
     
         self.LB = LB
         self.UB = UB
+        self.IntCon = IntCon
+        self.constraints = constraints
+
         self.Vmin = Vmin
         self.Vmax = Vmax
         
-        if initpos is not None:
-            self.pos = initpos
-        else:
-            self.pos = np.zeros((num,dimension))
-        
-        if initbestpos is not None:
-            self.bestpos = initbestpos
-        else:
-            self.bestpos = np.zeros((num,dimension))
-        
-        if initvelocity is not None:
-            self.velocity = initvelocity
-        else:
-            self.velocity = np.zeros((num,dimension))
-
-        if initgroupbestpos is not None:
-            self.groupbestpos = initgroupbestpos
-        else:
-            self.groupbestpos = np.zeros(dimension)
+        self.pos = initpos
+        self.bestpos = initbestpos
+        self.velocity = initvelocity
+        self.groupbestpos = initgroupbestpos
 
         self.verbose = verbose
+        self.parallelized = parallelized
+        self.options = options
+
+        self.creationfunction = creationfunction
+
         self.initparticles()
 
     def initparticles(self):
-        self.velocity = np.random.random((self.num,self.dimension))
-        self.pos = np.random.random((self.num,self.dimension))
+        if self.velocity is None:
+            self.velocity = np.random.random((self.num,self.dimension))
+        if self.pos is None:
+            self.pos = np.random.random((self.num,self.dimension))
+        if self.bestpos is None:
+            self.bestpos = np.random.random((self.num,self.dimension))
+        if self.groupbestpos is None:
+            self.groupbestpos = np.zeros(dimension)
+
         self.evaluate()
 
     def update(self):
@@ -70,15 +70,29 @@ class Particle:
         self.evaluate()
 
     def evaluate(self):
+        groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
+
         for i in range(self.num):
-            if self.func(self.pos[i]) < self.func(self.bestpos[i]):
+            value = self.func(self.pos[i]) + self.constraints.fitness(self.pos[i])
+            bestvalue = self.func(self.bestpos[i]) + self.constraints.fitness(self.bestpos[i])
+
+            if value < bestvalue:
                 self.bestpos[i] = self.pos[i]
-            if self.func(self.bestpos[i]) < self.func(self.groupbestpos):
+                bestvalue = self.func(self.bestpos[i]) + self.constraints.fitness(self.bestpos[i])
+
+            if bestvalue < groupbestpos:
                 self.groupbestpos = self.bestpos[i]
+                groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
+                
         if self.verbose:
             print 'Best Particle: {best}'.format(best=self.groupbestpos)
 
-    def check(self):
+    def exchangeout(self,size):
+        position = np.array(random.sample(range(self.num),size))
+        return self.pos[position],position
+
+    def exchangein(self,position,particles):
+        self.pos[position] = particles
         return True
 
     def getbest(self):

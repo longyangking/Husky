@@ -1,6 +1,6 @@
 import numpy as np
 
-def Uniform(particlesize,featuresize,LB,UB,Vmin,Vmax,IntCon,**args):
+def Uniform(particlesize,featuresize,LB,UB,Vmin,Vmax,IntCon,sargs):
     particles = np.zeros((particlesize,featuresize))
     if (LB is not None) and (UB is not None):
         for i in range(particlesize):

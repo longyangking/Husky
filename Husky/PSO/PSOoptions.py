@@ -6,3 +6,6 @@ class PSOoptions:
     def __init__(self):
         pass
 
+class Creation:
+    def __init__(self):
+        self.args = dict()
