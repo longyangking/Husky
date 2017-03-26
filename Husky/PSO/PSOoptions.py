@@ -4,7 +4,7 @@
 
 class PSOoptions:
     def __init__(self):
-        pass
+        self.Creation = Creation()
 
 class Creation:
     def __init__(self):

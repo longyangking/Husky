@@ -183,7 +183,7 @@ class GA:
                         print 'Optimization terminated: \n{reason}'.format(reason=code)
                     break
 
-                if (i+1)%self.migrationinterval == 0:
+                if (i+1)%self.migrationinterval == 0 and self.groupsize > 1:
                     self.migrate()
                     if self.verbose:
                         print '----Migration----'
@@ -195,7 +195,7 @@ class GA:
                         if self.verbose:
                             print 'Optimization terminated: Time Limit!'
                         break
-            if self.verbose:
+            if self.verbose and not status:
                 print 'Optimization terminated: Maximum Generation'
         else:
             generation = 1
@@ -211,7 +211,7 @@ class GA:
                         print 'Optimization terminated: \n{reason}'.format(reason=code)
                     break
 
-                if generation%self.migrationinterval == 0:
+                if generation%self.migrationinterval == 0 and self.groupsize > 1:
                     self.migrate()
                     if self.verbose:
                         print '----Migration----'
