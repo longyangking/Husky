@@ -11,7 +11,8 @@
 + Plot options
 + Automatically adaptive parameter Setting (Intelligent?)
 + Multiple  Constraint
-+ Chaotic Crossover Operator
++ Simulated Binary/Chaotic Crossover Operator
++ Polynomial Mutation Operator
 
 ## Status
 Working on it based on test-driven development

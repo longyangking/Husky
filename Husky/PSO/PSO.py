@@ -18,6 +18,9 @@ class PSO:
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,\
         maxiter=None,particlesize=300,\
         parallelized=False,verbose=False,options=None):
+        '''
+        Standard Particle Swarm Optimization
+        '''
 
         self.featuresize = nvars                # Number of variables
         self.timelimit = timelimit              # Time limit to optimize
@@ -67,11 +70,12 @@ class PSO:
         self.constraints.add(constraintfunc,penalty)
     
     def setparameter(self,parameter,value): 
+        # TODO Rewrite these settings
         if parameter == 'timelimit':
             self.timelimit = value
             return True
-        if parameter == 'maxgeneration':
-            self.maxgeneration = value
+        if parameter == 'maxiter':
+            self.maxiter = value
             return True
         return False
 
