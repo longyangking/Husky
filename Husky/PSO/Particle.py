@@ -87,7 +87,7 @@ class Particle:
                 self.bestpos[i] = self.pos[i]
                 bestvalue = self.func(self.bestpos[i]) + self.constraints.fitness(self.bestpos[i])
 
-            if bestvalue < groupbestpos:
+            if bestvalue < groupbest:
                 self.groupbestpos = self.bestpos[i]
                 groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
 

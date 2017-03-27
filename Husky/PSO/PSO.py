@@ -3,12 +3,16 @@
 # License: LGPL-2.1
 
 import numpy as np
+import time
+
 from Constraint import Constraints
 from Particle import Particle
+from PSOoptions import PSOoptions
 import Creation
 
 class PSO:
-    def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,initparticles=None,\
+    def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,\
+        initpos=None,initbestpos=None,initvelocity=None,initgroupbestpos=None,\
         C1=0.2,C2=0.2,w=1.0,minfractionneighbors=None,\
         timelimit=None,stalliterlimit=50,stalltimelimit=None,TolFun=1.0*10**-6,\
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,\
@@ -26,7 +30,11 @@ class PSO:
         self.LB = LB
         self.UB = UB
         self.IntCon = IntCon                    # Integer Constraint
-        self.initparticles = initparticles      # Initial particles
+        self.initpos = initpos                  # Initial particles
+        self.initbestpos = initbestpos
+        self.initvelocity = initvelocity
+        self.initgroupbestpos = initgroupbestpos
+
         self.verbose = verbose                  # Verbose sign
 
         self.C1 = C1
@@ -41,7 +49,10 @@ class PSO:
         self.exchangeinterval = exchangeinterval
 
         self.parallelized = parallelized
-        self.options = options
+        if options is not None:
+            self.options = options
+        else:
+            self.options = PSOoptions()
         self.creationfunction = Creation.Uniform
 
         self.stalliterlimit = stalliterlimit
@@ -70,14 +81,14 @@ class PSO:
         '''
         starttime = time.time()
         # Initiate the particles group
-        for i in self.groupsize:
+        for i in range(self.groupsize):
             self.particles.append(Particle(func=self.func,particlesize=self.particlesize,\
                                 featuresize=self.featuresize,C1=self.C1,C2=self.C2,w=self.w,\
                                 LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,\
-                                initpos=self.initparticles,initbestpos=self.initbestpos,\
+                                initpos=self.initpos,initbestpos=self.initbestpos,\
                                 initvelocity=self.initvelocity,initgroupbestpos=self.initgroupbestpos,\
                                 creationfunction=self.creationfunction,minfractionneighbors=self.minfractionneighbors,\
-                                parallelized=self.parallelized,verbose=self.verbose,self.options=options))
+                                parallelized=self.parallelized,verbose=self.verbose,options=self.options))
             self.stallobjectives.append(None)
 
         if self.maxiter is not None:
@@ -149,7 +160,7 @@ class PSO:
         '''
         activecount = 0
         for i in range(self.groupsize):
-            objective = self.particles[i].getbest()
+            (solution,objective) = self.particles[i].getbest()
             
             if self.stallobjectives[i] is None:
                 self.stallobjectives[i] = objective
@@ -236,4 +247,4 @@ class PSO:
         for i in range(self.groupsize):
             (solutions[i],objectives[i]) = self.particles[i].getbest()
         bestpos = np.argmin(objectives)
-        return solutions[bestpos],fitness[bestpos]
+        return solutions[bestpos],objectives[bestpos]
