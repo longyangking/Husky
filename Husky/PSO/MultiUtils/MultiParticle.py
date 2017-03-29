@@ -3,16 +3,18 @@
 # License: LGPL-2.1
 
 import numpy as np
+import Pareto
 
 class MultiParticle:
-    def __init__(self,func,particlesize,featuresize,C1,C2,w,LB,UB,IntCon,constraints,\
+    def __init__(self,func,particlesize,featuresize,targetsize,C1,C2,w,LB,UB,IntCon,constraints,\
         initpos,initbestpos,initvelocity,initgroupbestpos,\
-        creationfunction,minfractionneighbors,distancefunction,\
-        parallelized,verbose,options):
+        creationfunction,minfractionneighbors,distancefunction,mutationfunction,\
+        algorithm,parallelized,verbose,options):
 
         self.func = func
         self.particlesize = particlesize
         self.featuresize = featuresize
+        self.targetsize = targetsize
 
         self.C1 = C1
         self.C2 = C2
@@ -24,15 +26,18 @@ class MultiParticle:
         self.constraints = constraints
         
         self.pos = initpos
-        self.bestpos = initbestpos
         self.velocity = initvelocity
+
+        self.bestpos = initbestpos
         self.groupbestpos = initgroupbestpos
 
+        self.algorithm = algorithm
         self.verbose = verbose
         self.parallelized = parallelized
         self.options = options
 
         self.minfractionneighbors = minfractionneighbors
+        self.mutationfunction = mutationfunction
         self.creationfunction = creationfunction
         self.distancefunction = distancefunction
 
@@ -45,12 +50,23 @@ class MultiParticle:
 
         if self.velocity is None:
             self.velocity = velocity
+        else:
+            self.velocity = np.array(self.velocity)
+
         if self.pos is None:
             self.pos = pos
+        else:
+            self.pos = np.array(self.pos)
+
         if self.bestpos is None:
             self.bestpos = pos          # Can be improved
+        else:
+            self.bestpos = np.array(self.bestpos)
+
         if self.groupbestpos is None:
-            self.groupbestpos = np.zeros(self.featuresize)  # Can be improved
+            self.groupbestpos = np.array([])  # Can be improved
+        else:
+            self.groupbestpos = np.array(self.groupbestpos)
 
         self.evaluate()
 
@@ -58,7 +74,11 @@ class MultiParticle:
         # Naive update
         R1 = np.random.random((self.particlesize,self.featuresize))
         R2 = np.random.random((self.particlesize,self.featuresize))
-        V = self.w*self.velocity + self.C1*R1*(self.bestpos-self.pos) + self.C2*R2*(self.groupbestpos-self.pos)
+
+        # Algorithm Setting here
+        groupbestpos = self.groupbestpos[np.random.randint(len(self.groupbestpos),size=self.particlesize)]
+        V = self.w*self.velocity + self.C1*R1*(self.bestpos-self.pos) + self.C2*R2*(groupbestpos-self.pos)
+
         self.velocity = V
         self.pos = self.pos + V
         
@@ -78,22 +98,33 @@ class MultiParticle:
         self.evaluate()
 
     def evaluate(self):
-        groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
+        length = 2*self.particlesize + len(self.groupbestpos)
+        fitness = np.zeros((length,self.targetsize))
+        pos = np.zeros((length,self.featuresize))
+
+        # TODO Can be optimized here!
+        for i in range(self.particlesize):
+            pos[i] = self.pos[i]
+            fitness[i] = np.array(self.func(self.pos[i])) + self.constraints.fitness(self.pos[i])
+            pos[i+self.particlesize] = self.bestpos[i]
+            fitness[i+self.particlesize] = np.array(self.func(self.bestpos[i])) + self.constraints.fitness(self.bestpos[i])
+        
+        if len(self.groupbestpos) > 0:
+            for i in range(len(self.groupbestpos)):
+                pos[i+2*self.particlesize] = self.groupbestpos[i]
+                fitness[i+2*self.particlesize] = np.array(self.func(self.groupbestpos[i])) + self.constraints.fitness(self.groupbestpos[i])
+
+        rank,distance = Pareto.FastNonDominatedSorting(fitness,args=self.options.Pareto.args)
+
+        groupbestindex = np.where(rank==0)
+        self.groupbestpos[groupbestindex] = pos[groupbestindex]
 
         for i in range(self.particlesize):
-            value = self.func(self.pos[i]) + self.constraints.fitness(self.pos[i])
-            bestvalue = self.func(self.bestpos[i]) + self.constraints.fitness(self.bestpos[i])
-
-            if value < bestvalue:
+            if (rank[i] < rank[i+self.particlesize]) or ((rank[i] == rank[i+self.particlesize]) and (distance[i] > distance[i+self.particlesize])):
                 self.bestpos[i] = self.pos[i]
-                bestvalue = self.func(self.bestpos[i]) + self.constraints.fitness(self.bestpos[i])
-
-            if bestvalue < groupbest:
-                self.groupbestpos = self.bestpos[i]
-                groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
-
+                
         if self.verbose:
-            print 'Best Particle: {best}'.format(best=self.groupbestpos)
+            print 'The number of particles in best group position: {best}'.format(best=len(self.groupbestpos))
 
     def exchangeout(self,size):
         position = np.array(random.sample(range(self.particlesize),size))
@@ -106,8 +137,11 @@ class MultiParticle:
     def getallparticles(self):
         objectives = np.zeros(self.particlesize)
         for i in range(self.particlesize):
-            objectives[i] = self.func(self.pos[i])
-        return pos,objectives
+            objectives[i] = np.array(self.func(self.pos[i]))
+        return self.pos,objectives
 
     def getbest(self):
-        return self.groupbestpos,self.func(self.groupbestpos)
+        objectives = np.zeros(len(self.groupbestpos),self.targetsize)
+        for i in range(len(self.groupbestpos)):
+            objectives[i] = np.array(self.func(self.groupbestpos[i]))
+        return self.groupbestpos,objectives

@@ -90,7 +90,8 @@ class MultiPSO:
         # Initiate the particles group
         for i in range(self.groupsize):
             self.particles.append(Particle(func=self.func,particlesize=self.particlesize,\
-                                featuresize=self.featuresize,C1=self.C1,C2=self.C2,w=self.w,\
+                                featuresize=self.featuresize,targetsize=self.targetsize,\
+                                C1=self.C1,C2=self.C2,w=self.w,\
                                 LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,\
                                 initpos=self.initpos,initbestpos=self.initbestpos,\
                                 initvelocity=self.initvelocity,initgroupbestpos=self.initgroupbestpos,\
@@ -176,7 +177,7 @@ class MultiPSO:
                 continue
             
             # Calculate Stall Generation
-            averagechange = np.abs(objective-self.stallobjectives[i])
+            averagechange = np.sum(np.abs(objective-self.stallobjectives[i]))/np.sum(np.abs(self.stallobjectives[i]))
             if averagechange < self.TolFun:
                 self.stallcount[i] += 1
                 self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
@@ -241,7 +242,7 @@ class MultiPSO:
 
     def getcache(self):
         solutions = np.zeros((self.particlesize*self.groupsize,self.featuresize))
-        objectives = np.zeros(self.particlesize*self.groupsize)
+        objectives = np.zeros((self.particlesize*self.groupsize,self.targetsize))
         for i in range(self.groupsize):
             (solution,objective) = self.particles[i].getallparticles()
             solutions[(i)*self.popsize:(i+1)*self.popsize,:] = solution
@@ -250,9 +251,22 @@ class MultiPSO:
         return solutions,objectives
 
     def getsolution(self):
-        solutions = np.zeros((self.groupsize,self.featuresize))
-        objectives = np.zeros(self.groupsize)
+        solutions = list()
+        objectives = list()
+        fitness = list()
+
         for i in range(self.groupsize):
-            (solutions[i],objectives[i]) = self.particles[i].getbest()
-        bestpos = np.argmin(objectives)
-        return solutions[bestpos],objectives[bestpos]
+            (solution,objective) = self.particles[i].getbest()
+            for j in range(len(solution)):
+                solutions.append(solution[j])
+                objectives.append(objective[j])
+                fitness.append(objective[j] + self.constraints.fitness(solution[j]))
+
+        solutions = np.array(solutions)
+        objectives = np.array(objectives)
+        fitness = np.array(fitness)
+
+        rank,distance = MultiUtils.Pareto(fitness,args=self.options.Pareto.args)
+        front = np.where(rank==0)
+
+        return solutions[front],objectives[front]

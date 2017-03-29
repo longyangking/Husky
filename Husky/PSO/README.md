@@ -1,7 +1,7 @@
 # Particle Swarm Optimization
 
 ## Features
-+ Multi-objective optimization
++ Multi-objective optimization (CMOPSO/SMPSO)
 + Exchange particles among different groups
 + Quantum transport supported
 + Adaptive Velocity Weight and Personal/Social Coefficients
