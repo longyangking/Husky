@@ -8,8 +8,8 @@ import Pareto
 class MultiParticle:
     def __init__(self,func,particlesize,featuresize,targetsize,C1,C2,w,LB,UB,IntCon,constraints,\
         initpos,initbestpos,initvelocity,initgroupbestpos,\
-        creationfunction,minfractionneighbors,distancefunction,mutationfunction,\
-        algorithm,parallelized,verbose,options):
+        creationfunction,minfractionneighbors,distancefunction,fitnessscalefunction,mutationfunction,\
+        mutationrate,parallelized,verbose,options):
 
         self.func = func
         self.particlesize = particlesize
@@ -20,9 +20,21 @@ class MultiParticle:
         self.C2 = C2
         self.w = w
     
-        self.LB = LB
-        self.UB = UB
-        self.IntCon = IntCon
+        if LB is not None:
+            self.LB = np.array(LB)
+        else:
+            self.LB = LB
+        
+        if UB is not None:
+            self.UB = np.array(UB)
+        else:
+            self.UB = UB
+        
+        if IntCon is not None:
+            self.IntCon = np.array(IntCon)
+        else:
+            self.IntCon = IntCon
+
         self.constraints = constraints
         
         self.pos = initpos
@@ -31,15 +43,16 @@ class MultiParticle:
         self.bestpos = initbestpos
         self.groupbestpos = initgroupbestpos
 
-        self.algorithm = algorithm
         self.verbose = verbose
         self.parallelized = parallelized
         self.options = options
 
+        self.mutationrate = mutationrate
         self.minfractionneighbors = minfractionneighbors
-        self.mutationfunction = mutationfunction
+        self.fitnessscalefunction = fitnessscalefunction
         self.creationfunction = creationfunction
         self.distancefunction = distancefunction
+        self.mutationfunction = mutationfunction
 
         self.initparticles()
 
@@ -58,13 +71,17 @@ class MultiParticle:
         else:
             self.pos = np.array(self.pos)
 
+        pos,velocity = self.creationfunction(self.particlesize,self.featuresize,\
+                        LB=self.LB,UB=self.UB,IntCon=self.IntCon,\
+                        args=self.options.Creation.args)
+
         if self.bestpos is None:
             self.bestpos = pos          # Can be improved
         else:
             self.bestpos = np.array(self.bestpos)
 
         if self.groupbestpos is None:
-            self.groupbestpos = np.array([])  # Can be improved
+            self.groupbestpos = None  # Can be improved
         else:
             self.groupbestpos = np.array(self.groupbestpos)
 
@@ -83,48 +100,70 @@ class MultiParticle:
         self.pos = self.pos + V
         
         if self.LB is not None:
-            posLB = np.where(self.pos<LB)
-            self.pos[posLB] = LB[posLB]
+            for i in range(self.featuresize):
+                posLB = np.where(self.pos[:,i]<self.LB[i])
+                self.pos[posLB,i] = self.LB[i]
         
         if self.UB is not None:
-            posUB = np.where(self.pos>UB)
-            self.pos[posUB] = UB[posUB]
+            for i in range(self.featuresize):
+                posUB = np.where(self.pos[:,i]>self.UB[i])
+                self.pos[posUB,i] = self.UB[i]
 
         if self.IntCon is not None:
             intpos = np.floor(self.pos[:,self.IntCon])
             intpos = intpos + 1*(np.random.random(size=intpos.shape)>0.5)
             self.pos[:,self.IntCon] = intpos
-
+        
+        self.mutation()
         self.evaluate()
 
+        if self.verbose:
+            print 'The number of particles in best group position: {best}'.format(best=len(self.groupbestpos))
+
+    def mutation(self):
+        fitness = np.zeros((self.particlesize,self.targetsize))
+        for i in range(self.particlesize):
+            fitness[i] = np.array(self.func(self.pos[i])) + self.constraints.fitness(self.pos[i])
+        
+        scaledfitness = self.fitnessscalefunction(fitness,args=self.options.FitnessScale.args)
+        rank,distance = Pareto.FastNonDominatedSorting(scaledfitness,args=self.options.Pareto.args)
+
+        self.pos = self.mutationfunction(self.pos,rank,distance,self.LB,self.UB,self.mutationrate,self.IntCon,
+                        args=self.options.Mutation.args)
+
     def evaluate(self):
-        length = 2*self.particlesize + len(self.groupbestpos)
+        length = 2*self.particlesize
         fitness = np.zeros((length,self.targetsize))
         pos = np.zeros((length,self.featuresize))
 
-        # TODO Can be optimized here!
+        # Update Particle Best Positions
         for i in range(self.particlesize):
             pos[i] = self.pos[i]
             fitness[i] = np.array(self.func(self.pos[i])) + self.constraints.fitness(self.pos[i])
             pos[i+self.particlesize] = self.bestpos[i]
             fitness[i+self.particlesize] = np.array(self.func(self.bestpos[i])) + self.constraints.fitness(self.bestpos[i])
         
-        if len(self.groupbestpos) > 0:
-            for i in range(len(self.groupbestpos)):
-                pos[i+2*self.particlesize] = self.groupbestpos[i]
-                fitness[i+2*self.particlesize] = np.array(self.func(self.groupbestpos[i])) + self.constraints.fitness(self.groupbestpos[i])
-
-        rank,distance = Pareto.FastNonDominatedSorting(fitness,args=self.options.Pareto.args)
-
-        groupbestindex = np.where(rank==0)
-        self.groupbestpos[groupbestindex] = pos[groupbestindex]
+        scaledfitness = self.fitnessscalefunction(fitness,args=self.options.FitnessScale.args)
+        rank,distance = Pareto.FastNonDominatedSorting(scaledfitness,args=self.options.Pareto.args)
 
         for i in range(self.particlesize):
             if (rank[i] < rank[i+self.particlesize]) or ((rank[i] == rank[i+self.particlesize]) and (distance[i] > distance[i+self.particlesize])):
                 self.bestpos[i] = self.pos[i]
-                
-        if self.verbose:
-            print 'The number of particles in best group position: {best}'.format(best=len(self.groupbestpos))
+      
+        # Update Group Best Positions
+        if self.groupbestpos is not None:
+            pos = np.concatenate((self.bestpos,self.groupbestpos))
+        else:
+            pos = self.bestpos
+        fitness = np.zeros((len(pos),self.targetsize)) 
+        for i in range(len(pos)):
+            fitness[i] = np.array(self.func(pos[i])) + self.constraints.fitness(pos[i])
+
+        scaledfitness = self.fitnessscalefunction(fitness,args=self.options.FitnessScale.args)
+        rank,distance = Pareto.FastNonDominatedSorting(scaledfitness,args=self.options.Pareto.args)
+
+        groupbestindex = np.where(rank==0)
+        self.groupbestpos = pos[groupbestindex]
 
     def exchangeout(self,size):
         position = np.array(random.sample(range(self.particlesize),size))
@@ -141,7 +180,7 @@ class MultiParticle:
         return self.pos,objectives
 
     def getbest(self):
-        objectives = np.zeros(len(self.groupbestpos),self.targetsize)
+        objectives = np.zeros((len(self.groupbestpos),self.targetsize))
         for i in range(len(self.groupbestpos)):
             objectives[i] = np.array(self.func(self.groupbestpos[i]))
         return self.groupbestpos,objectives

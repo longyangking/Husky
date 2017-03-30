@@ -248,9 +248,9 @@ class MultiGA:
                 continue
             
             # Calculate Stall Generation
-            averagechange = np.abs(np.min(objectives,axis=0)-np.min(self.stallobjectives[i],axis=0))
-            base = np.abs(np.min(objectives,axis=0))
-            if np.sum(averagechange < self.TolFun*base) == self.targetsize:
+            averagechange = np.sum(np.mean(objectives,axis=0)-np.mean(self.stallobjectives[i],axis=0))
+            base = np.sum(np.min(self.stallobjectives[i],axis=0))
+            if (averagechange/base < self.TolFun) and (len(objectives) > 1):
                 self.stallgeneration[i] += 1
                 self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
                 #if self.verbose:

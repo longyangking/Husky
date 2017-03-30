@@ -16,7 +16,7 @@ def FastNonDominatedSorting(fitness,args):
     '''
     popsize = np.size(fitness,axis=0)
     targetsize = np.size(fitness,axis=1)
-    rank = np.zeros(popsize)
+    rank = popsize*np.ones(popsize)
     distance = np.zeros(popsize)
 
     fronts = list()

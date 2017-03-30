@@ -6,8 +6,6 @@ import numpy as np
 import time
 
 from Constraint import Constraints
-from Particle import Particle
-from PSOoptions import PSOoptions
 import MultiUtils
 
 class MultiPSO:
@@ -16,13 +14,8 @@ class MultiPSO:
         C1=0.2,C2=0.2,w=1.0,minfractionneighbors=None,\
         timelimit=None,stalliterlimit=50,stalltimelimit=None,TolFun=1.0*10**-6,\
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,\
-        maxiter=None,particlesize=300,\
-        algorithm='SMPSO',parallelized=False,verbose=False,options=None):
-        '''
-        Multi-objective Particle Swarm Optimization
-            1. OMOPSO
-            2. SMPSO
-        '''
+        maxiter=None,particlesize=300,mutationrate=0.2,\
+        parallelized=False,verbose=False,options=None):
 
         self.targetsize = targetsize
         self.featuresize = nvars                # Number of variables
@@ -53,15 +46,17 @@ class MultiPSO:
         self.exchangeforward = exchangeforward
         self.exchangefraction = exchangefraction
         self.exchangeinterval = exchangeinterval
+        self.mutationrate = mutationrate
 
         self.parallelized = parallelized
         if options is not None:
             self.options = options
         else:
-            self.options = PSOoptions()
+            self.options = MultiUtils.PSOoptions.PSOoptions()
         self.creationfunction = MultiUtils.Creation.Uniform
         self.distancefunction = MultiUtils.Pareto.FastNonDominatedSorting
-
+        self.fitnessscalefunction = MultiUtils.FitnessScale.Rank
+        self.mutationfunction = MultiUtils.Mutation.Uniform
         self.stalliterlimit = stalliterlimit
         self.stalltimelimit = stalltimelimit
         self.TolFun = TolFun
@@ -89,15 +84,23 @@ class MultiPSO:
         starttime = time.time()
         # Initiate the particles group
         for i in range(self.groupsize):
-            self.particles.append(Particle(func=self.func,particlesize=self.particlesize,\
+            self.particles.append(MultiUtils.MultiParticle.MultiParticle(func=self.func,particlesize=self.particlesize,\
                                 featuresize=self.featuresize,targetsize=self.targetsize,\
                                 C1=self.C1,C2=self.C2,w=self.w,\
-                                LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,\
-                                initpos=self.initpos,initbestpos=self.initbestpos,\
-                                initvelocity=self.initvelocity,initgroupbestpos=self.initgroupbestpos,\
-                                creationfunction=self.creationfunction,distancefunction=self.distancefunction,\
-                                minfractionneighbors=self.minfractionneighbors,\
-                                parallelized=self.parallelized,verbose=self.verbose,options=self.options))
+                                LB=self.LB,UB=self.UB,IntCon=self.IntCon,
+                                constraints=self.constraints,
+                                initpos=self.initpos,
+                                initbestpos=self.initbestpos,
+                                initvelocity=self.initvelocity,
+                                initgroupbestpos=self.initgroupbestpos,
+                                creationfunction=self.creationfunction,
+                                distancefunction=self.distancefunction,
+                                fitnessscalefunction=self.fitnessscalefunction,
+                                mutationfunction=self.mutationfunction,
+                                minfractionneighbors=self.minfractionneighbors,
+                                mutationrate=self.mutationrate,
+                                parallelized=self.parallelized,
+                                verbose=self.verbose,options=self.options))
             self.stallobjectives.append(None)
 
         if self.maxiter is not None:
@@ -177,8 +180,9 @@ class MultiPSO:
                 continue
             
             # Calculate Stall Generation
-            averagechange = np.sum(np.abs(objective-self.stallobjectives[i]))/np.sum(np.abs(self.stallobjectives[i]))
-            if averagechange < self.TolFun:
+            averagechange = np.sum(np.mean(objective,axis=0)-np.mean(self.stallobjectives[i],axis=0))
+            base = np.sum(np.min(self.stallobjectives[i],axis=0))
+            if (averagechange/base < self.TolFun) and (len(objective) > 1):
                 self.stallcount[i] += 1
                 self.stalltime[i] = self.stalltime[i] + time.time() - self.stallstarttime[i]
                 #if self.verbose:
@@ -266,7 +270,7 @@ class MultiPSO:
         objectives = np.array(objectives)
         fitness = np.array(fitness)
 
-        rank,distance = MultiUtils.Pareto(fitness,args=self.options.Pareto.args)
+        rank,distance = MultiUtils.Pareto.FastNonDominatedSorting(fitness,args=self.options.Pareto.args)
         front = np.where(rank==0)
 
         return solutions[front],objectives[front]
