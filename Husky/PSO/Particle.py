@@ -18,9 +18,21 @@ class Particle:
         self.C2 = C2
         self.w = w
     
-        self.LB = LB
-        self.UB = UB
-        self.IntCon = IntCon
+        if LB is not None:
+            self.LB = np.array(LB)
+        else:
+            self.LB = LB
+
+        if UB is not None:
+            self.UB = np.array(UB)
+        else:
+            self.UB = UB
+        
+        if IntCon is not None:
+            self.IntCon = np.array(IntCon)
+        else:
+            self.IntCon = IntCon
+
         self.constraints = constraints
         
         self.pos = initpos
@@ -61,19 +73,21 @@ class Particle:
         self.velocity = V
         self.pos = self.pos + V
         
-        if self.LB is not None:
-            posLB = np.where(self.pos<LB)
-            self.pos[posLB] = LB[posLB]
-        
-        if self.UB is not None:
-            posUB = np.where(self.pos>UB)
-            self.pos[posUB] = UB[posUB]
-
         if self.IntCon is not None:
             intpos = np.floor(self.pos[:,self.IntCon])
             intpos = intpos + 1*(np.random.random(size=intpos.shape)>0.5)
             self.pos[:,self.IntCon] = intpos
 
+        if self.LB is not None:
+            for i in range(self.featuresize):
+                posLB = np.where(self.pos[:,i]<self.LB[i])
+                self.pos[posLB,i] = self.LB[i]
+        
+        if self.UB is not None:
+            for i in range(self.featuresize):
+                posUB = np.where(self.pos[:,i]>self.UB[i])
+                self.pos[posUB,i] = self.UB[i]
+                
         self.evaluate()
 
     def evaluate(self):

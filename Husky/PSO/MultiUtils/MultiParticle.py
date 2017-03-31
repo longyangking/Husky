@@ -98,6 +98,11 @@ class MultiParticle:
 
         self.velocity = V
         self.pos = self.pos + V
+
+        if self.IntCon is not None:
+            intpos = np.floor(self.pos[:,self.IntCon])
+            intpos = intpos + 1*(np.random.random(size=intpos.shape)>0.5)
+            self.pos[:,self.IntCon] = intpos
         
         if self.LB is not None:
             for i in range(self.featuresize):
@@ -108,12 +113,7 @@ class MultiParticle:
             for i in range(self.featuresize):
                 posUB = np.where(self.pos[:,i]>self.UB[i])
                 self.pos[posUB,i] = self.UB[i]
-
-        if self.IntCon is not None:
-            intpos = np.floor(self.pos[:,self.IntCon])
-            intpos = intpos + 1*(np.random.random(size=intpos.shape)>0.5)
-            self.pos[:,self.IntCon] = intpos
-        
+       
         self.mutation()
         self.evaluate()
 
