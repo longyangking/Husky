@@ -1,7 +1,11 @@
 import numpy as np
 
 class State:
-    def __init__(self,func,statesize,featuresize,initT,dT=None,initstates=None,K=1):
+    def __init__(self,func,statesize,featuresize,LB,UB,IntCon,
+        inittemperature,temperature,initstates,
+        acceptancefunction,annealingfunction,temperaturefunction,
+        parallelized,verbose,options):
+
         self.func = func
         self.statesize = statesize
         self.featuresize = featuresize

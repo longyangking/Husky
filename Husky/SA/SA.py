@@ -5,7 +5,12 @@
 import numpy as np
 
 class SA:
-    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,initstates=None,timelimit=None,maxgeneration=300,statesize=100,tolerance=0.05,verbose=False):
+    def __init__(self,fitnessfunc,nvars,LB=None,UB=None,IntCon=None,
+        initstates=None,statesize=None,reannealinterval=100,initialtemperature=None,
+        timelimit=None,maxiter=None,TolFun=1.0*10**-6,
+        objectivelimit=None,stalliterlimit=None,
+        selfoptimization=False,parallelized=False,verbose=False,options=None):
+
         self.featuresize = nvars
         self.timelimit = timelimit
         self.maxgeneration = maxgeneration
@@ -19,6 +24,10 @@ class SA:
         self.initstates = initstates
         self.verbose = verbose
         self.tolerance = tolerance
+
+        self.acceptancefunction = 
+        self.annealingfunction = 
+        self.temperaturefunction = 
 
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
