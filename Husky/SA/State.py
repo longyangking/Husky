@@ -2,7 +2,7 @@ import numpy as np
 
 class State:
     def __init__(self,func,statesize,featuresize,LB,UB,IntCon,
-        inittemperature,temperature,initstates,
+        inittemperature,temperature,initstates,constraints,
         acceptancefunction,annealingfunction,temperaturefunction,
         parallelized,verbose,options):
 
@@ -49,7 +49,16 @@ class State:
                 self.Es[i] = newEs[i]
         
         self.T = self.T - self.dT
+
+    def update(self):
+        
     
+    def exchangeout(self,statesize):
+        
+
+    def exchangein(self,pos,states):
+        
+
     def getresult(self):
         bestpos = np.argmin(self.Es)
         return self.states[bestpos],self.Es[bestpos]
