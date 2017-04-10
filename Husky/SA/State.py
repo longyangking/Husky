@@ -1,65 +1,82 @@
 import numpy as np
+import random
 
 class State:
-    def __init__(self,func,statesize,featuresize,LB,UB,IntCon,
-        inittemperature,temperature,initstates,constraints,
-        acceptancefunction,annealingfunction,temperaturefunction,
+    def __init__(self,func,statesize,featuresize,LB,UB,IntCon,constraints,
+        initstates,inittemperature,
+        acceptancefunction,annealingfunction,temperaturefunction,fitnessscalefunction,
         parallelized,verbose,options):
 
         self.func = func
         self.statesize = statesize
         self.featuresize = featuresize
-        self.T = initT
+
+        self.LB = LB
+        self.UB = UB
+        self.IntCon = IntCon
+        self.constraints = constraints
+
+        if inittemperature is not None:
+            self.temperature = inittemperature
+        else:
+            self.temperature = (UB-LB)/2
+
+        self.k = np.ones(self.featuresize)
+
         if initstates is not None:
             self.states = initstates
         else:
-            self.states = None
+            self.states = np.zeros((self.statesize,self.featuresize))
 
-        self.Es = np.zeros(self.statesize)
-        self.K = K
+        self.objectives = np.zeros(self.statesize)
+        self.fitness = np.zeros(self.statesize)
 
-        if dT is not None:
-            self.dT = dT
-        else:
-            self.dT = 1.0*initT/300
+        self.acceptancefunction = acceptancefunction
+        self.annealingfunction = annealingfunction
+        self.temperaturefunction = temperaturefunction
+        self.fitnessscalefunction = fitnessscalefunction
+
+        self.parallelized = parallelized
+        self.verbose = verbose
+        self.options = options
+
+        self.init()
+        self.evaluate()
         
     def init(self):
-        if self.states is None:
-            self.states = np.random.random((self.statesize,self.featuresize))
-            for i in range(self.statesize):
-                self.Es[i] = self.func(self.states[i])
-    
-    def newstates(self):
-        states = np.random.random((self.statesize,self.featuresize))
-        Es = np.zeros(self.statesize)
         for i in range(self.statesize):
-            Es[i] = self.func(states[i])
-        return states,Es
+            self.states[i] = self.LB + (self.UB-self.LB)*np.random.random(self.featuresize)
+        # Integer Restriction
+        if IntCon is not None:
+            intstate = np.floor(states[:,IntCon])
+            intstate = intstate + 1*(np.random.random(size=intstate.shape)>0.5)
+            states[:,IntCon] = intstate
 
-    def cooling(self,tolerance):
-        # Naive cooling, coming soon
-        newstates,newEs = self.newstates()
+    def evaluate(self):
         for i in range(self.statesize):
-            dE = newEs[i] - self.Es[i]
-            if dE < 0:
-                self.states[i] = newstates[i]
-                self.Es[i] = newEs[i]
-            elif exp(-dE/(self.K*self.T)) > np.random.random():
-                self.states[i] = newstates[i]
-                self.Es[i] = newEs[i]
-        
-        self.T = self.T - self.dT
+            self.fitness[i] = self.func(self.states[i])
+                + self.constraints.fitness(self.states[i])
+            self.objectives[i] = self.func(self.states[i])
 
     def update(self):
-        
+        self.states = self.annealingfunction(currenstates=self.states,
+            LB=self.LB,UB=self.UB,IntCon=self.IntCon,
+            temperature=self.temperature,
+            options=self.options.Annealing.args)
     
-    def exchangeout(self,statesize):
+    def reanneal(self):
         
+
+    def exchangeout(self,statesize):
+        pos = np.array(random.sample(range(self.statesize),statesize))
+        return self.states[pos],pos
 
     def exchangein(self,pos,states):
-        
+        self.states[pos] = states
 
-    def getresult(self):
-        bestpos = np.argmin(self.Es)
-        return self.states[bestpos],self.Es[bestpos]
-            
+    def getbest(self):
+        bestpos = np.argmin(self.objectives)
+        return self.states[bestpos],self.objectives[bestpos]
+
+    def getallstates(self):
+        return self.states,self.objectives
