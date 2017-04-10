@@ -5,11 +5,12 @@
 import numpy as np
 from Constraint import Constraints
 from State import State
+import time
 import Utils
 
 class SA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,
-        initstates=None,statesize=None,reannealinterval=100,initialtemperature=None,
+        initstates=None,statesize=300,reannealinterval=100,inittemperature=None,
         timelimit=None,maxiter=None,TolFun=1.0*10**-6,
         objectivelimit=None,stalliterlimit=None,stalltimelimit=None,
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,
@@ -17,15 +18,15 @@ class SA:
 
         self.func = func
         self.featuresize = nvars
-        if LB is not None:
+        if LB is None:
             self.LB = LB
         else:
             self.LB = np.array(LB)
-        if UB is not None:
+        if UB is None:
             self.UB = UB
         else:
             self.UB = np.array(UB)
-        if IntCon is not None:
+        if IntCon is None:
             self.IntCon = IntCon
         else:
             self.IntCon = np.array(IntCon)
@@ -33,7 +34,7 @@ class SA:
         self.initstates = initstates
         self.statesize = statesize
         self.reannealinterval = reannealinterval
-        self.initialtemperature = initialtemperature
+        self.inittemperature = inittemperature
 
         self.timelimit = timelimit
         self.maxiter = maxiter
@@ -67,7 +68,7 @@ class SA:
         self.acceptancefunction = Utils.Acceptance.AcceptanceSA
         self.annealingfunction = Utils.Annealing.AnnealingFast
         self.temperaturefunction = Utils.Temperature.TemperatureExp
-        self.fitnessscalefunction = Utils.FitnessScale.Rank
+        self.fitnessscalefunction = Utils.FitnessScale.Same
 
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
@@ -78,8 +79,8 @@ class SA:
             return True
         return False
 
-     def start(self):
-            '''
+    def start(self):
+        '''
         Main process of SA
         '''
         starttime = time.time()
