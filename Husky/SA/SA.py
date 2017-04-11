@@ -12,7 +12,7 @@ class SA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,
         initstates=None,statesize=300,reannealinterval=100,inittemperature=None,
         timelimit=None,maxiter=None,TolFun=1.0*10**-6,
-        objectivelimit=None,stalliterlimit=None,stalltimelimit=None,
+        objectivelimit=None,stalliterlimit=None,stalltimelimit=None,maxfunevals=None,
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,
         selfoptimization=False,parallelized=False,verbose=False,options=None):
 
@@ -38,9 +38,20 @@ class SA:
 
         self.timelimit = timelimit
         self.maxiter = maxiter
+
+        if maxfunevals is not None:
+            self.maxfunevals = maxfunevals
+        else:
+            self.maxfunevals = 3000*np.size(nvars)/self.statesize
+
         self.TolFun = TolFun
         self.objectivelimit = objectivelimit
-        self.stalliterlimit = stalliterlimit
+
+        if stalliterlimit is not None:
+            self.stalliterlimit = stalliterlimit
+        else:
+            self.stalliterlimit = 100*np.size(nvars)
+
         self.stalltimelimit = stalltimelimit
         
         self.groupsize = groupsize
@@ -88,7 +99,7 @@ class SA:
         for i in range(self.groupsize):
             self.states.append(State(func=self.func,statesize=self.statesize,featuresize=self.featuresize,
                                 LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,
-                                initstates=self.initstates,inittemperature=self.inittemperature,
+                                initstates=self.initstates,inittemperature=self.inittemperature,maxfunevals=self.maxfunevals,
                                 acceptancefunction=self.acceptancefunction,
                                 annealingfunction=self.annealingfunction,
                                 temperaturefunction=self.temperaturefunction,
@@ -121,6 +132,11 @@ class SA:
                         if self.verbose:
                             print 'Optimization terminated: Time Limit!'
                         break
+
+                if (i+1)%self.reannealinterval == 0:
+                    self.reanneal()
+                    if self.verbose:
+                        print '-----reanneal-----'
                     
             if self.verbose and not status:
                 print 'Optimization terminated: Maximum Generaion'
@@ -149,6 +165,11 @@ class SA:
                         if self.verbose:
                             print 'Optimization terminated: Time Limit!'
                         break
+
+                if (iter+1)%self.reannealinterval == 0:
+                    self.reanneal()
+                    if self.verbose:
+                        print '-----reanneal-----'
             
                 iter += 1
 
@@ -209,6 +230,14 @@ class SA:
                 elif self.statesstatus[i] == 2:
                     code += '{num}th group -> {reason}\n'.format(num=i+1,reason='Stall Time Limit')
             return True,code
+
+    def reanneal(self):
+        '''
+        Re-Annealing
+        '''
+        for i in range(self.groupsize):
+            if self.statesstatus[i] == 0:             # Paricles[i] is on Active State
+                self.states[i].reanneal()
 
     def exchange(self):
         '''

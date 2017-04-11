@@ -62,6 +62,8 @@ def constraintfun6(x):
     return penalty
 
 def fun6(x):
+    if np.abs(x[0])<0.000001:
+        return np.inf
     return 7.5*x[2] + 5.5*(1-x[2]) + 7*x[0] + 6*x[1] + 50*(x[2]/(2*x[2]-1))/(0.9*(1-np.exp(-0.5*x[0]))) \
         + 50*(1-x[2]/(2*x[2]-1))/(0.8*(1-np.exp(-0.4*x[0])))
 

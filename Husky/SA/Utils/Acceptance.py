@@ -15,7 +15,16 @@ def AcceptanceSA(delE,temperature,args):
     acceptance[acceptstate] = 1
 
     considerstate = np.where(delE >= 0)
-    prob = 1/(1 + np.exp(delE[considerstate]/np.max(temperature)))
+    prob = np.zeros(np.size(considerstate))
+
+    if np.max(temperature) == 0:
+        return acceptance
+
+    delta = delE[considerstate]/np.max(temperature)
+    inf = delta>100
+    prob[inf==True] = 0
+    prob[inf==False] = 1/(1+np.exp(delta[inf==False]))
+
     rand = np.random.random(np.size(considerstate))
 
     acceptpoint = np.where(prob > rand)
