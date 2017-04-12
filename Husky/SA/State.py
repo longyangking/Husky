@@ -34,6 +34,10 @@ class State:
         self.objectives = np.zeros(self.statesize)
         self.fitness = np.zeros(self.statesize)
 
+        self.bestobjective = None
+        self.bestfitness = None
+        self.beststate = None
+
         self.acceptancefunction = acceptancefunction
         self.annealingfunction = annealingfunction
         self.temperaturefunction = temperaturefunction
@@ -44,8 +48,8 @@ class State:
         self.options = options
 
         self.init()
-        (self.fitness,self.objectives) = self.evaluate(self.states)
         
+
     def init(self):
         for i in range(self.statesize):
             self.states[i] = self.LB + (self.UB-self.LB)*np.random.random(self.featuresize)
@@ -54,6 +58,9 @@ class State:
             intstate = np.floor(self.states[:,self.IntCon])
             intstate = intstate + 1*(np.random.random(size=intstate.shape)>0.5)
             self.states[:,self.IntCon] = intstate
+
+        (self.fitness,self.objectives) = self.evaluate(self.states)
+        self.adjustbeststate()
 
     def evaluate(self,states):
         (statesize,featuresize) = states.shape
@@ -78,16 +85,18 @@ class State:
             acceptance = self.acceptancefunction(delE=delfitness,temperature=self.temperature,args=self.options.Acceptance.args)
 
             pos = np.where(acceptance)
+
             self.states[pos] = states[pos]
             self.fitness[pos] = fitness[pos]
             self.objectives[pos] = objectives[pos]
 
+            self.adjustbeststate()
         # Update Temperature
         self.temperature = self.temperaturefunction(temperature=self.temperature,k=self.k,args=self.options.Temperature.args)
 
         if self.verbose:
             (beststate,bestobjective) = self.getbest()
-            print 'Temperature {temperature}'.format(temperature=self.temperature)
+            print 'Temperature {temperature} with objective {objective}'.format(temperature=self.temperature,objective=self.bestobjective)
     
     def reanneal(self):
         # Calculate s
@@ -106,7 +115,11 @@ class State:
         Tratio = self.inittemperature/self.temperature
         Sratio = smax/s     
 
-        self.k = np.abs(np.log(Tratio*Sratio))
+        
+        ratio = Tratio*Sratio
+        #self.k[ratio==0] = 1000
+        self.k = np.abs(np.log(ratio))
+
         self.k[np.isinf(self.k)] = 1.0
         self.temperature = self.temperature*Sratio  # TODO check the logic
 
@@ -120,9 +133,27 @@ class State:
     def exchangein(self,pos,states):
         self.states[pos] = states
 
+    def adjustbeststate(self):
+        bestpos = np.argmin(self.fitness)
+        beststate = self.states[bestpos]
+        bestobjective = self.objectives[bestpos]
+        bestfitness = self.fitness[bestpos]
+
+        if bestfitness < self.bestfitness:
+            self.bestobjective = bestobjective
+            self.beststate = beststate
+            self.bestfitness = bestfitness
+
     def getbest(self):
-        bestpos = np.argmin(self.objectives)
-        return self.states[bestpos],self.objectives[bestpos]
+        bestpos = np.argmin(self.fitness)
+        beststate = self.states[bestpos]
+        bestobjective = self.objectives[bestpos]
+        bestfitness = self.fitness[bestpos]
+
+        if (self.beststate is None) or (bestfitness < self.bestfitness):
+            return beststate,bestobjective
+        else:
+            return self.beststate,self.bestobjective
 
     def getallstates(self):
         return self.states,self.objectives

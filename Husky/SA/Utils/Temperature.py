@@ -8,7 +8,7 @@ def TemperatureExp(temperature,k,args):
     '''
     Annealing in Exponent form (Default)
     '''
-    return temperature*np.power(0.95,k)
+    return temperature*np.power(0.97,k)
 
 def TemperatureFast(temperature,k,args):
     '''

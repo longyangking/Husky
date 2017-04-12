@@ -50,7 +50,7 @@ class SA:
         if stalliterlimit is not None:
             self.stalliterlimit = stalliterlimit
         else:
-            self.stalliterlimit = 100*np.size(nvars)
+            self.stalliterlimit = 150*np.size(nvars)
 
         self.stalltimelimit = stalltimelimit
         
