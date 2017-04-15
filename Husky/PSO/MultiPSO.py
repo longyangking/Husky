@@ -249,8 +249,8 @@ class MultiPSO:
         objectives = np.zeros((self.particlesize*self.groupsize,self.targetsize))
         for i in range(self.groupsize):
             (solution,objective) = self.particles[i].getallparticles()
-            solutions[(i)*self.popsize:(i+1)*self.popsize,:] = solution
-            objectives[(i)*self.popsize:(i+1)*self.popsize] = objective
+            solutions[(i)*self.particlesize:(i+1)*self.particlesize,:] = solution
+            objectives[(i)*self.particlesize:(i+1)*self.particlesize] = objective
 
         return solutions,objectives
 
