@@ -4,6 +4,7 @@ import Temperature as Temperature
 import FitnessScale as FitnessScale
 from MultiSAoptions import MultiSAoptions as MultiSAoptions
 import Pareto as Pareto
+import Mutation as Mutation
 
 __version__ = "0.0.1"
 

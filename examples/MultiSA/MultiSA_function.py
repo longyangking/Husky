@@ -25,7 +25,7 @@ if __name__=='__main__':
     LB = [-10]
     UB = [10]
     multisa = SA.MultiSA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,
-                maxiter=80,statesize=100,maxfunevals=5,verbose=True)
+                maxiter=100,statesize=20,maxfunevals=1,verbose=True)
     multisa.start()
     solutions,objectives = multisa.getsolution()
 

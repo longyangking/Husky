@@ -3,8 +3,8 @@ import random
 
 class MultiState:
     def __init__(self,func,statesize,featuresize,targetsize,LB,UB,IntCon,constraints,
-        initstates,inittemperature,maxfunevals,
-        acceptancefunction,annealingfunction,temperaturefunction,fitnessscalefunction,distancefunction,
+        initstates,inittemperature,maxfunevals,mutationrate,
+        acceptancefunction,annealingfunction,temperaturefunction,fitnessscalefunction,distancefunction,mutationfunction,
         parallelized,verbose,options):
 
         self.func = func
@@ -21,11 +21,12 @@ class MultiState:
             self.inittemperature = inittemperature
             self.temperature = inittemperature
         else:
-            self.inittemperature = 1       # max rank = 10
-            self.temperature = 1
+            self.inittemperature = self.statesize*np.ones(self.featuresize)       # max rank = 10
+            self.temperature = self.statesize*np.ones(self.featuresize)
 
         self.k = np.ones(self.featuresize)
         self.maxfunevals = maxfunevals
+        self.mutationrate = mutationrate
 
         if initstates is not None:
             self.states = initstates
@@ -44,6 +45,7 @@ class MultiState:
         self.temperaturefunction = temperaturefunction
         self.fitnessscalefunction = fitnessscalefunction
         self.distancefunction = distancefunction
+        self.mutationfunction = mutationfunction
 
         self.parallelized = parallelized
         self.verbose = verbose
@@ -73,13 +75,16 @@ class MultiState:
             fitness[i] = np.array(self.func(states[i])) + self.constraints.fitness(states[i])*np.ones(self.targetsize)
             objectives[i] = np.array(self.func(states[i]))
 
-        return fitness,objectives
+        return fitness,objectives       
 
     def update(self):
         for i in range(self.maxfunevals):
             # Annealing
             states = self.annealingfunction(currenstates=self.states,LB=self.LB,UB=self.UB,IntCon=self.IntCon,
-                temperature=self.temperature,args=self.options.Annealing.args)
+                temperature=self.temperature/self.statesize,args=self.options.Annealing.args)
+            
+            states = self.mutationfunction(states,LB=self.LB,UB=self.UB,mutationrate=self.mutationrate,IntCon=self.IntCon,args=self.options.Mutation.args)
+
             (fitness,objectives) = self.evaluate(states)
 
             # Whether to Accept
@@ -100,32 +105,35 @@ class MultiState:
         # Update Temperature
         self.temperature = self.temperaturefunction(temperature=self.temperature,k=self.k,args=self.options.Temperature.args)
 
+        #print self.beststate, self.bestobjectives
+
         if self.verbose:
-            print 'Temperature {temperature}'.format(temperature=self.temperature)
+            print 'Temperature {temperature} with number of pareto frontier:{num}'.format(temperature=self.temperature,num=np.size(self.bestfitness,axis=0))
     
     def reanneal(self):
         # Calculate s
-        bounddiff = self.UB-self.LB
-        bestpos = np.argmin(self.objectives)
-        state = self.states[bestpos]
+        #bounddiff = self.UB-self.LB
+        #state = self.beststate
 
-        value0 = self.fitness[bestpos]
-        value1 = self.func(state+state/10000) + self.constraints.fitness(state+state/10000)
-        diff = value1-value0
-        s = np.abs(bounddiff*diff)
-        smax = np.max(s)
+        #value0 = np.mean(self.bestfitness,axis=0)
+        #value1 = self.func(np.mean(state+state/10000,axis=0)) + self.constraints.fitness(np.mean(state+state/10000,axis=0))
+        #diff = value1-value0
+        #s = np.max(np.abs(bounddiff*diff))
+        #smax = np.max(s)
 
         # Update k
-        self.temperature[self.temperature==0] = 1
-        Tratio = self.inittemperature/self.temperature
-        Sratio = smax/s     
-        ratio = Tratio*Sratio
+        self.temperature = np.ones(self.featuresize)
+        #self.temperature[self.temperature==0] = 1
+        #Tratio = self.inittemperature/self.temperature
+        #Sratio = smax/s     
+        #ratio = Tratio*Sratio
 
         #self.k[ratio==0] = 1000
-        self.k = np.abs(np.log(ratio))
+        #self.k = np.abs(np.log(ratio))
 
-        self.k[np.isinf(self.k)] = 1.0
-        self.temperature = self.temperature*Sratio  # TODO check the logic
+        #self.k[np.isinf(self.k)] = 1.0
+        #self.temperature = self.temperature*Sratio  # TODO check the logic
+        self.k = 1
 
         if self.verbose:
             print "Reanneal parameters: {k}".format(k=self.k)

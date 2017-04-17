@@ -9,6 +9,7 @@ class MultiSAoptions:
         self.Temperature = Temperature()
         self.FitnessScale = FitnessScale()
         self.Pareto = Pareto()
+        self.Mutation = Mutation()
 
 class Acceptance():
     def __init__(self):
@@ -30,5 +31,9 @@ class FitnessScale():
         self.args['quality'] = 0.4
 
 class Pareto():
+    def __init__(self):
+        self.args = dict()
+
+class Mutation:
     def __init__(self):
         self.args = dict()

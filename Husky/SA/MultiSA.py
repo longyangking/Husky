@@ -11,7 +11,7 @@ import MultiUtils
 class MultiSA:
     def __init__(self,func,targetsize,nvars,LB=None,UB=None,IntCon=None,
         initstates=None,statesize=300,reannealinterval=100,inittemperature=None,
-        timelimit=None,maxiter=None,TolFun=1.0*10**-6,
+        timelimit=None,maxiter=None,TolFun=1.0*10**-6,mutationrate=0.2,
         objectivelimit=None,stalliterlimit=None,stalltimelimit=None,maxfunevals=None,
         groupsize=1,exchangeforward=True,exchangefraction=0.2,exchangeinterval=20,
         selfoptimization=False,parallelized=False,verbose=False,options=None):
@@ -47,6 +47,7 @@ class MultiSA:
 
         self.TolFun = TolFun
         self.objectivelimit = objectivelimit
+        self.mutationrate = mutationrate
 
         if stalliterlimit is not None:
             self.stalliterlimit = stalliterlimit
@@ -82,6 +83,7 @@ class MultiSA:
         self.temperaturefunction = MultiUtils.Temperature.TemperatureExp
         self.fitnessscalefunction = MultiUtils.FitnessScale.Rank
         self.distancefunction = MultiUtils.Pareto.FastNonDominatedSorting
+        self.mutationfunction = MultiUtils.Mutation.Uniform
 
     def addconstraint(self,constraintfunc,penalty=1000):
         self.constraints.add(constraintfunc,penalty)
@@ -100,13 +102,14 @@ class MultiSA:
         # Initiate the States group
         for i in range(self.groupsize):
             self.states.append(MultiState(func=self.func,statesize=self.statesize,featuresize=self.featuresize,targetsize=self.targetsize,
-                                LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,
+                                LB=self.LB,UB=self.UB,IntCon=self.IntCon,constraints=self.constraints,mutationrate=self.mutationrate,
                                 initstates=self.initstates,inittemperature=self.inittemperature,maxfunevals=self.maxfunevals,
                                 acceptancefunction=self.acceptancefunction,
                                 annealingfunction=self.annealingfunction,
                                 temperaturefunction=self.temperaturefunction,
                                 fitnessscalefunction=self.fitnessscalefunction,
                                 distancefunction=self.distancefunction,
+                                mutationfunction=self.mutationfunction,
                                 parallelized=self.parallelized,verbose=self.verbose,options=self.options))
 
             self.stallobjectives.append(None)

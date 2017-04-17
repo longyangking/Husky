@@ -13,8 +13,8 @@ def AcceptanceSA(drank,ddistance,temperature,args):
 
     acceptstate = np.where(drank < 0)
     acceptance[acceptstate] = 1
-    acceptstate = np.where((drank == 0)*(ddistance > 0))
-    acceptance[acceptstate] = 1
+    #acceptstate = np.where((drank == 0)*(ddistance > 0))
+    #acceptance[acceptstate] = 1
 
     considerstate = np.where(drank >= 0)
     prob = np.zeros(np.size(considerstate))
