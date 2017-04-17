@@ -25,7 +25,7 @@ if __name__=='__main__':
     LB = [-10]
     UB = [10]
     multisa = SA.MultiSA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,
-                maxiter=50,statesize=100,maxfunevals=10,verbose=True)
+                maxiter=80,statesize=100,maxfunevals=5,verbose=True)
     multisa.start()
     solutions,objectives = multisa.getsolution()
 
@@ -34,6 +34,7 @@ if __name__=='__main__':
     plt.xlabel(r'$F_1$')
     plt.ylabel(r'$F_2$')
     plt.title('Pareto Front')
+    plt.show()
 
 if 0:
 
@@ -50,4 +51,4 @@ if 0:
     plt.ylabel(r'$F_2$')
     plt.title('Pareto Front')
 
-    plt.show()
+    
