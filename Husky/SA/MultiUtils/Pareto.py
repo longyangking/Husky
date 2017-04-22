@@ -16,7 +16,8 @@ def FastNonDominatedSorting(fitness,args):
     '''
     popsize = np.size(fitness,axis=0)
     targetsize = np.size(fitness,axis=1)
-    rank = popsize*np.ones(popsize)
+    #rank = popsize*np.ones(popsize)
+    rank = np.zeros(popsize)
     distance = np.zeros(popsize)
 
     fronts = list()
@@ -31,9 +32,9 @@ def FastNonDominatedSorting(fitness,args):
         dominatedindividuals.append([])
 
         for j in range(popsize):
-            if np.sum(1*(fitness[i]>fitness[j])):
+            if (np.sum(1*(fitness[i]>fitness[j]))==targetsize) and (np.sum(1*(fitness[i]==fitness[j]))<targetsize):
                 dominatedindividuals[i].append(j)
-            elif np.sum(1*(fitness[i]<fitness[j])):
+            elif (np.sum(1*(fitness[i]<fitness[j]))==targetsize) and (np.sum(1*(fitness[i]==fitness[j]))<targetsize):
                 dominatecount[i] += 1
         if dominatecount[i] == 0:
             fronts[0].append(i)
@@ -43,8 +44,8 @@ def FastNonDominatedSorting(fitness,args):
     index = 0
     while len(fronts[index]) > 0:
         nextfront = list()
-        for i in range(len(fronts[index])):
-            for j in dominatedindividuals[i]:
+        for frontindex in fronts[index]:
+            for j in dominatedindividuals[frontindex]:
                 dominatecount[j] -= 1
                 if dominatecount[j] == 0:
                     rank[j] = index + 1

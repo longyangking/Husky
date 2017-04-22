@@ -24,7 +24,7 @@ if __name__=='__main__':
     print '1th Function Optimizing ...'
     LB = [-10]
     UB = [10]
-    multipso = PSO.MultiPSO(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,maxiter=50,particlesize=100)
+    multipso = PSO.MultiPSO(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,maxiter=30,particlesize=100)
     multipso.start()
     solutions,objectives = multipso.getsolution()
 
@@ -37,7 +37,7 @@ if __name__=='__main__':
     print '2th Function Optimizing ...'
     LB = [-10]
     UB = [10]
-    multipso = PSO.MultiPSO(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB,particlesize=100,verbose=True)
+    multipso = PSO.MultiPSO(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB,particlesize=80,verbose=True)
     multipso.start()
     solutions,objectives = multipso.getsolution()
 
