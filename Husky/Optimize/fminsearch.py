@@ -1,7 +1,11 @@
+# Author: Yang Long <longyang_123@yeah.net>
+#
+# License: LGPL-2.1
+
 import numpy as np 
 
 def fminsearch(fun,x0,numofpoints=None,
-    alpha=1.0,gamma=2.0,rho=0.5,gamma=0.5,
+    alpha=1.0,gamma=2.0,rho=0.5,sigma=0.5,
     alpha0=1.0,
     stalliteration=50,tolfun=1e-6):
     '''
@@ -33,7 +37,7 @@ def fminsearch(fun,x0,numofpoints=None,
             bestvalue = values[orders[0]]
             bestx = xs[orders[0]]
         else:
-            if np.abs((bestvalue-values[orders[0]])/bestvalue) <= tolfun:
+            if np.abs((bestvalue-values[orders[0]])) <= tolfun*bestvalue:
                 count += 1
             bestvalue = values[orders[0]]
             bestx = xs[orders[0]]
@@ -82,6 +86,6 @@ def fminsearch(fun,x0,numofpoints=None,
             xs[i] = xbest + sigma*(xs[i] - xbest)
             values[i] = fun(xs[i])
 
-    return [bestx.bestvalue]
+    return [bestx,bestvalue]
 
         
