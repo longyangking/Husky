@@ -11,7 +11,7 @@ def Tournament(fitness,nParents,args):
     Choose best individual based on the Tournament (Default)
     '''
     tournamentsize = 3
-    if args.has_key('tournamentsize'):
+    if 'tournamentsize' in args:
         tournamentsize = args['tournamentsize']
 
     selected = np.zeros(nParents,dtype=int)

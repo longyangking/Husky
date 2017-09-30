@@ -22,7 +22,7 @@ def Proportional(finess,args):
     Scale the individual proportional to its raw fitness score
     '''
     factor = 1.0
-    if args.has_key('factor'):
+    if 'factor' in args:
         factor = args['factor']
 
     popsize = np.size(fitness,axis=0)

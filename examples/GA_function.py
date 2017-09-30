@@ -66,7 +66,7 @@ def fun6(x):
         + 50*(1-x[2]/(2*x[2]-1))/(0.8*(1-np.exp(-0.4*x[0])))
 
 if __name__=='__main__':
-    print '-'*50
+    print('-'*50)
 
     LB = [0,0]
     UB = [1.6,1]
@@ -74,9 +74,9 @@ if __name__=='__main__':
     ga = GA.GA(fun1,2,LB=LB,UB=UB,IntCon=IntCon)
     ga.addconstraint(constraintfun1)
     ga.start()
-    print 'The global optimal is (0.5,1) with value 2'
-    print 'Fun 1 answer: ',ga.getsolution()
-    print '-'*50
+    print('The global optimal is (0.5,1) with value 2')
+    print('Fun 1 answer: ',ga.getsolution())
+    print('-'*50)
 
     LB = [0.5,0]
     UB = [1.5,1]
@@ -84,18 +84,18 @@ if __name__=='__main__':
     ga = GA.GA(fun2,2,LB=LB,UB=UB,IntCon=IntCon)
     ga.addconstraint(constraintfun2)
     ga.start()
-    print 'The global optimal is (1.35,1) with value 2.1'
-    print 'Fun 2 answer: ',ga.getsolution()
-    print '-'*50
+    print('The global optimal is (1.35,1) with value 2.1')
+    print('Fun 2 answer: ',ga.getsolution())
+    print('-'*50)
 
     LB = [13,0]
     UB = [100,100]
     ga = GA.GA(fun3,2,LB=LB,UB=UB)
     ga.addconstraint(constraintfun3)
     ga.start()
-    print 'The global optimal is (14,0.8) with value -6961'
-    print 'Fun 3 answer: ',ga.getsolution()
-    print '-'*50
+    print('The global optimal is (14,0.8) with value -6961')
+    print('Fun 3 answer: ',ga.getsolution())
+    print('-'*50)
 
     LB = [0,0,0]
     UB = [10,10,10]
@@ -103,9 +103,9 @@ if __name__=='__main__':
     ga = GA.GA(fun4,3,LB=LB,UB=UB,IntCon=IntCon)
     ga.addconstraint(constraintfun4)
     ga.start()
-    print 'The global optimal is (2,0,5) with value -68'
-    print 'Fun 4 answer: ',ga.getsolution()
-    print '-'*50
+    print('The global optimal is (2,0,5) with value -68')
+    print('Fun 4 answer: ',ga.getsolution())
+    print('-'*50)
 
     LB = [0,0,0,0]
     UB = [1,1,1,1]
@@ -113,9 +113,9 @@ if __name__=='__main__':
     ga = GA.GA(fun5,4,LB=LB,UB=UB,IntCon=IntCon)
     ga.addconstraint(constraintfun5,20)
     ga.start()
-    print 'The global optimal is (0,0,1,1) with value -6'
-    print 'Fun 5 answer: ',ga.getsolution()
-    print '-'*50
+    print('The global optimal is (0,0,1,1) with value -6')
+    print('Fun 5 answer: ',ga.getsolution())
+    print('-'*50)
 
     LB = [0,0,0]
     UB = [10,10,1]
@@ -123,5 +123,5 @@ if __name__=='__main__':
     ga = GA.GA(fun6,3,LB=LB,UB=UB,IntCon=IntCon)
     ga.addconstraint(constraintfun6)
     ga.start()
-    print 'The global optimal is (3.5,0,1) with value 99.2'
-    print 'Fun 6 answer: ',ga.getsolution()
+    print('The global optimal is (3.5,0,1) with value 99.2')
+    print('Fun 6 answer: ',ga.getsolution())

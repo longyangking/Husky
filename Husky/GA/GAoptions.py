@@ -3,11 +3,11 @@
 # License: LGPL-2.1
 
 import numpy as np
-import Creation
-import Selection
-import FitnessScale
-import Mutation
-import Crossover
+from . import Creation
+from . import Selection
+from . import FitnessScale
+from . import Mutation
+from . import Crossover
 
 class GAoptions:
     '''

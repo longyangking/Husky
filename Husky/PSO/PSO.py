@@ -5,10 +5,10 @@
 import numpy as np
 import time
 
-from Constraint import Constraints
-from Particle import Particle
-from PSOoptions import PSOoptions
-import Creation
+from .Constraint import Constraints
+from .Particle import Particle
+from .PSOoptions import PSOoptions
+from . import Creation
 
 class PSO:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,\
@@ -98,54 +98,54 @@ class PSO:
         if self.maxiter is not None:
             for i in range(self.maxiter):
                 if self.verbose:
-                    print '{num}th update: '.format(num=i+1),
+                    print('{num}th update: '.format(num=i+1),end='')
                 self.update()
 
                 [status,code] = self.check()
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print('Optimization terminated: {reason}'.format(reason=code))
                     break
 
                 if (i+1)%self.exchangeinterval == 0 and self.groupsize > 1:
                     self.exchange()
                     if self.verbose:
-                        print '-----exchange-----'
+                        print('-----exchange-----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
                     
             if self.verbose and not status:
-                print 'Optimization terminated: Maximum Generaion'
+                print('Optimization terminated: Maximum Generaion')
         else:
             iter = 0
             while 1:
                 if self.verbose:
-                    print '{num}th update: '.format(num=iter+1),
+                    print('{num}th update: '.format(num=iter+1),end='')
                 self.update()
 
                 [status,code] = self.check()
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print('Optimization terminated: {reason}'.format(reason=code))
                     break
 
                 if (iter+1)%self.exchangeinterval == 0 and self.groupsize > 1:
                     self.exchange()
                     if self.verbose:
-                        print '-----exchange-----'
+                        print('-----exchange-----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
             
                 iter += 1

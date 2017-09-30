@@ -108,7 +108,7 @@ class MultiState:
         #print self.beststate, self.bestobjectives
 
         if self.verbose:
-            print 'Temperature {temperature} with number of pareto frontier:{num}'.format(temperature=self.temperature,num=np.size(self.bestfitness,axis=0))
+            print('Temperature {temperature} with number of pareto frontier:{num}'.format(temperature=self.temperature,num=np.size(self.bestfitness,axis=0)))
     
     def reanneal(self):
         # Calculate s
@@ -136,7 +136,7 @@ class MultiState:
         self.k = 1
 
         if self.verbose:
-            print "Reanneal parameters: {k}".format(k=self.k)
+            print("Reanneal parameters: {k}".format(k=self.k))
 
     def exchangeout(self,statesize):
         pos = np.array(random.sample(range(self.statesize),statesize))

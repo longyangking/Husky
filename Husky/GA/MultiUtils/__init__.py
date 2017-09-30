@@ -1,10 +1,10 @@
-import MultiGAoptions as MultiGAoptions
-import Creation as Creation
-import Crossover as Crossover
-import FitnessScale as FitnessScale
-import Mutation as Mutation
-import Pareto as Pareto
-import Selection as Selection
+from . import MultiGAoptions as MultiGAoptions
+from . import Creation as Creation
+from . import Crossover as Crossover
+from . import FitnessScale as FitnessScale
+from . import Mutation as Mutation
+from . import Pareto as Pareto
+from . import Selection as Selection
 
 __all__ = [
     'MultiGAoptions',

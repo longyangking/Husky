@@ -96,7 +96,7 @@ class State:
 
         if self.verbose:
             (beststate,bestobjective) = self.getbest()
-            print 'Temperature {temperature} with objective {objective}'.format(temperature=self.temperature,objective=self.bestobjective)
+            print('Temperature {temperature} with objective {objective}'.format(temperature=self.temperature,objective=self.bestobjective))
     
     def reanneal(self):
         # Calculate s
@@ -124,7 +124,7 @@ class State:
         self.temperature = self.temperature*Sratio  # TODO check the logic
 
         if self.verbose:
-            print "Reanneal parameters: {k}".format(k=self.k)
+            print("Reanneal parameters: {k}".format(k=self.k))
 
     def exchangeout(self,statesize):
         pos = np.array(random.sample(range(self.statesize),statesize))
@@ -139,7 +139,7 @@ class State:
         bestobjective = self.objectives[bestpos]
         bestfitness = self.fitness[bestpos]
 
-        if bestfitness < self.bestfitness:
+        if (self.bestfitness is None) or (bestfitness < self.bestfitness):
             self.bestobjective = bestobjective
             self.beststate = beststate
             self.bestfitness = bestfitness

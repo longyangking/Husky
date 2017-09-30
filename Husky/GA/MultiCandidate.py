@@ -3,7 +3,7 @@
 # License:  LGPL-2.1
 
 import numpy as np
-import MultiUtils
+from . import MultiUtils
 
 class MultiCandidates:
     def __init__(self,popsize,chromesize,func,targetsize,constraints,IntCon,LB,UB,\
@@ -107,19 +107,19 @@ class MultiCandidates:
         Populations Evolution
         '''
         if self.verbose:
-            print 'Start: ',
+            print('Start: ',end=' ')
         elitechilds = self.elite()
 
         if self.verbose:
-            print 'Pareto({num}) -> '.format(num=np.size(elitechilds,axis=0)),
+            print('Pareto({num}) -> '.format(num=np.size(elitechilds,axis=0)),end=' ')
         crossoverchilds = self.crossover()
 
         if self.verbose:
-            print 'Cross({num}) -> '.format(num=np.size(crossoverchilds,axis=0)),
+            print('Cross({num}) -> '.format(num=np.size(crossoverchilds,axis=0)),end=' ')
         mutationchilds = self.mutation()
 
         if self.verbose:
-            print 'Mutate({num}) -> '.format(num=np.size(mutationchilds,axis=0)),
+            print('Mutate({num}) -> '.format(num=np.size(mutationchilds,axis=0)),end=' ')
             
         self.populations = np.concatenate((self.populations,elitechilds,crossoverchilds,mutationchilds))
         self.fit()
@@ -131,7 +131,7 @@ class MultiCandidates:
         self.objectives = self.objectives[nextgenerations]
         
         if self.verbose:
-            print 'Finished!'
+            print('Finished!')
 
     def migrateout(self,popsize):
         '''

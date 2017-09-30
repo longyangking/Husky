@@ -1,9 +1,9 @@
-import PSOoptions as PSOoptions
-import Creation as Creation
-import Mutation as Mutation
-import Pareto as Pareto
-import FitnessScale as FitnessScale
-import MultiParticle as MultiParticle
+from . import PSOoptions as PSOoptions
+from . import Creation as Creation
+from . import Mutation as Mutation
+from . import Pareto as Pareto
+from . import FitnessScale as FitnessScale
+from . import MultiParticle as MultiParticle
 
 __all__ = [
     'PSOoptions',

@@ -106,7 +106,7 @@ class Particle:
                 groupbest = self.func(self.groupbestpos) + self.constraints.fitness(self.groupbestpos)
 
         if self.verbose:
-            print 'Best Particle: {best}'.format(best=self.groupbestpos)
+            print('Best Particle: {best}'.format(best=self.groupbestpos))
 
     def exchangeout(self,size):
         position = np.array(random.sample(range(self.particlesize),size))

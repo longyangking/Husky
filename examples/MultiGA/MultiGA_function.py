@@ -28,10 +28,10 @@ def fun2(x):
     return f1,f2
 
 if __name__=='__main__':
-    print '1th Function Optimizing ...'
+    print('1th Function Optimizing ...')
     LB = [-10]
     UB = [10]
-    multiga = GA.MultiGA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,maxgeneration=20)
+    multiga = GA.MultiGA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,maxgeneration=50,verbose=True)
     multiga.start()
     solutions,objectives = multiga.getsolution()
 
@@ -41,10 +41,10 @@ if __name__=='__main__':
     plt.ylabel(r'$F_2$')
     plt.title('Pareto Front')
 
-    print '2th Function Optimizing ...'
+    print('2th Function Optimizing ...')
     LB = [-10]
     UB = [10]
-    multiga = GA.MultiGA(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB)
+    multiga = GA.MultiGA(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB,maxgeneration=50)
     multiga.start()
     solutions,objectives = multiga.getsolution()
 

@@ -1,10 +1,10 @@
-import Acceptance as Acceptance
-import Annealing as Annealing
-import Temperature as Temperature
-import FitnessScale as FitnessScale
-from MultiSAoptions import MultiSAoptions as MultiSAoptions
-import Pareto as Pareto
-import Mutation as Mutation
+from . import Acceptance as Acceptance
+from . import Annealing as Annealing
+from . import Temperature as Temperature
+from . import FitnessScale as FitnessScale
+from .MultiSAoptions import MultiSAoptions as MultiSAoptions
+from . import Pareto as Pareto
+from . import Mutation as Mutation
 
 __version__ = "0.0.1"
 

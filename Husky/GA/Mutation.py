@@ -10,9 +10,9 @@ def Uniform(chromes,LB,UB,mutationrate,IntCon,args):
     '''
     preal = 0.1
     pint = 0.2
-    if args.has_key('preal'):
+    if 'preal' in args:
         preal = args['preal']
-    if args.has_key('pint'):
+    if 'pint' in args:
         pint = args['pint']
 
     (M,N) = np.shape(chromes)

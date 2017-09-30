@@ -22,7 +22,7 @@ def Proportional(finess,args):
     Scale the individual proportional to its raw fitness score
     '''
     factor = 1.0
-    if args.has_key('factor'):
+    if 'factor' in args:
         factor = args['factor']
 
     popsize = np.size(fitness,axis=0)
@@ -40,7 +40,7 @@ def ShiftLinear(finess,args):
     equal to a constant multiplied by the average score.
     '''
     rate = 2.0
-    if args.has_key('rate'):
+    if 'rate' in args:
         rate = args['rate']
 
     popsize = np.size(fitness,axis=0)
@@ -61,7 +61,7 @@ def Top(fitness,args):
     Scale the top individuals equally
     '''
     quality = 0.4
-    if args.has_key('quality'):
+    if 'quality' in args:
         quality = args['quality']
     
     popsize = np.size(fitness,axis=0)

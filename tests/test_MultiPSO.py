@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..\..")
+sys.path.append("..")
 
 import Husky.PSO as PSO
 import numpy as np
@@ -18,7 +18,7 @@ class TestPSO(unittest.TestCase):
         multipso = PSO.MultiPSO(func,1,2,verbose=True,maxiter=5)
         multipso.start()
         (bestnvars,value) = multipso.getsolution()
-        print bestnvars
+        print(bestnvars)
 
 if __name__ == '__main__':
     unittest.main() 

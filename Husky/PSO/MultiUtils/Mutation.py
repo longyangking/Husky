@@ -10,9 +10,9 @@ def Uniform(chromes,rank,distance,LB,UB,mutationrate,IntCon,args):
     '''
     preal = 0.1
     pint = 0.2
-    if args.has_key('preal'):
+    if 'preal' in args:
         preal = args['preal']
-    if args.has_key('pint'):
+    if 'pint' in args:
         pint = args['pint']
 
     (M,N) = np.shape(chromes)
@@ -51,9 +51,9 @@ def Gaussian(chromes,rank,distance,LB,UB,mutationrate,IntCon,args):
     '''
     shrink = 1.0
     scale = 1.0
-    if args.has_key('shrink'):
+    if 'shrink' in args:
         shrink = args['shrink']
-    if args.has_key('scale'):
+    if 'scale' in args:
         scale = args['scale']
     
     (M,N) = np.shape(chromes)

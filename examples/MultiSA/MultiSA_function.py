@@ -21,11 +21,11 @@ def fun2(x):
     return f1,f2
 
 if __name__=='__main__':
-    print '1th Function Optimizing ...'
+    print('1th Function Optimizing ...')
     LB = [-10]
     UB = [10]
     multisa = SA.MultiSA(func=fun1,nvars=1,targetsize=2,LB=LB,UB=UB,
-                maxiter=100,statesize=20,maxfunevals=1,verbose=True)
+                maxiter=10,statesize=50,maxfunevals=10,verbose=True)
     multisa.start()
     solutions,objectives = multisa.getsolution()
 
@@ -38,7 +38,7 @@ if __name__=='__main__':
 
 if 0:
 
-    print '2th Function Optimizing ...'
+    print('2th Function Optimizing ...')
     LB = [-10]
     UB = [10]
     multisa = SA.MultiSA(func=fun2,nvars=1,targetsize=2,LB=LB,UB=UB,statesize=100,verbose=True)

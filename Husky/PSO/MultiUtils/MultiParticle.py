@@ -3,7 +3,7 @@
 # License: LGPL-2.1
 
 import numpy as np
-import Pareto
+from . import Pareto
 
 class MultiParticle:
     def __init__(self,func,particlesize,featuresize,targetsize,C1,C2,w,LB,UB,IntCon,constraints,\
@@ -118,7 +118,7 @@ class MultiParticle:
         self.evaluate()
 
         if self.verbose:
-            print 'The number of particles in best group position: {best}'.format(best=len(self.groupbestpos))
+            print('The number of particles in best group position: {best}'.format(best=len(self.groupbestpos)))
 
     def mutation(self):
         fitness = np.zeros((self.particlesize,self.targetsize))

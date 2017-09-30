@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..\..")
+sys.path.append("..")
 
 import numpy as np
 import Husky.GA.Selection as Selection
@@ -12,8 +12,8 @@ class TestGAmutation(unittest.TestCase):
 
     def testTwoPoint(self):
         fitness = np.array([1,2,3])
-        parents = Selection.Tournament(fitness,nParents=4,tournamentsize=3)
-        print parents
+        parents = Selection.Tournament(fitness,nParents=4,args={"tournamentsize":3})
+        print(parents)
         self.assertTrue(True)
 
 if __name__ == '__main__':

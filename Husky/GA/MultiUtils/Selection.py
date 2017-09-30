@@ -3,7 +3,7 @@
 # License: LGPL-2.1
 
 import numpy as np
-import Pareto
+from . import Pareto
 # Selection function will select parents for next generation based on fitness data
 
 def Tournament(rank,distance,nParents,args):
@@ -11,7 +11,7 @@ def Tournament(rank,distance,nParents,args):
     Choose best individual based on the Tournament (Default)
     '''
     tournamentsize = 3
-    if args.has_key('tournamentsize'):
+    if 'tournamentsize' in args:
         tournamentsize = args['tournamentsize']
 
     selected = np.zeros(nParents,dtype=int)

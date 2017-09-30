@@ -96,5 +96,10 @@ def crowdingoperator(rank,distance):
     '''
     Sort data by crowding operator
     '''
-    data = np.array(zip(rank,-distance),dtype=[('rank', int), ('distance', float)])
-    return np.argsort(data, order=('rank','distance'))
+    #data = np.transpose(np.vstack((rank, -distance)))
+    #data.dtype=[('rank', int), ('distance', float)]
+    #data = np.array(zip(rank,-distance),dtype=[('rank', int), ('distance', float)])
+    #return np.argsort(data, order=('rank','distance'))
+    extra = distance/(np.max(distance)+1)
+    newrank = rank - extra
+    return np.argsort(newrank)

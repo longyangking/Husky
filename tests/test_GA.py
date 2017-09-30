@@ -5,7 +5,7 @@
 # Test cases for GA
 
 import sys
-sys.path.append("..\..")
+sys.path.append("..")
 
 import Husky.GA as GA
 import numpy as np

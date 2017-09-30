@@ -96,26 +96,26 @@ class Candidates:
         Populations Evolution
         '''
         if self.verbose:
-            print 'Start: ',
+            print('Start: ',end=' ')
         elitechilds = self.elite()
 
         if self.verbose:
-            print 'Elite({num}) -> '.format(num=np.size(elitechilds)),
+            print('Elite({num}) -> '.format(num=np.size(elitechilds)),end=' ')
         crossoverchilds = self.crossover()
 
         if self.verbose:
-            print 'Cross({num}) -> '.format(num=np.size(crossoverchilds)),
+            print('Cross({num}) -> '.format(num=np.size(crossoverchilds)),end=' ')
         mutationchilds = self.mutation()
 
         if self.verbose:
-            print 'Mutate({num}) -> '.format(num=np.size(mutationchilds)),
+            print('Mutate({num}) -> '.format(num=np.size(mutationchilds)),end=' ')
             
         self.populations = np.concatenate((elitechilds,crossoverchilds,mutationchilds))
         #self.populations = self.populations[np.argsort(self.fitness)[:self.popsize]]
         # Whether allow the competetion between parents and childs
         self.fit()
         if self.verbose:
-            print 'Finished! Diversity:',self.getdiversity()
+            print('Finished! Diversity:',self.getdiversity())
 
     def migrateout(self,popsize):
         '''

@@ -3,10 +3,10 @@
 # License: LGPL-2.1
 
 import numpy as np
-from Constraint import Constraints
-from State import State
+from .Constraint import Constraints
+from .State import State
 import time
-import Utils
+from . import Utils
 
 class SA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,
@@ -42,7 +42,7 @@ class SA:
         if maxfunevals is not None:
             self.maxfunevals = maxfunevals
         else:
-            self.maxfunevals = 3000*np.size(nvars)/self.statesize
+            self.maxfunevals = int(3000*np.size(nvars)/self.statesize)
 
         self.TolFun = TolFun
         self.objectivelimit = objectivelimit
@@ -111,65 +111,65 @@ class SA:
         if self.maxiter is not None:
             for i in range(self.maxiter):
                 if self.verbose:
-                    print '{num}th update: '.format(num=i+1),
+                    print('{num}th update: '.format(num=i+1),end='')
                 self.update()
 
                 [status,code] = self.check()
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print('Optimization terminated: {reason}'.format(reason=code))
                     break
 
                 if (i+1)%self.exchangeinterval == 0 and self.groupsize > 1:
                     self.exchange()
                     if self.verbose:
-                        print '-----exchange-----'
+                        print('-----exchange-----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
 
                 if (i+1)%self.reannealinterval == 0:
                     self.reanneal()
                     if self.verbose:
-                        print '-----reanneal-----'
+                        print('-----reanneal-----')
                     
             if self.verbose and not status:
-                print 'Optimization terminated: Maximum Generaion'
+                print('Optimization terminated: Maximum Generaion')
         else:
             iter = 0
             while 1:
                 if self.verbose:
-                    print '{num}th update: '.format(num=iter+1),
+                    print('{num}th update: '.format(num=iter+1),end='')
                 self.update()
 
                 [status,code] = self.check()
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: {reason}'.format(reason=code)
+                        print('Optimization terminated: {reason}'.format(reason=code))
                     break
 
                 if (iter+1)%self.exchangeinterval == 0 and self.groupsize > 1:
                     self.exchange()
                     if self.verbose:
-                        print '-----exchange-----'
+                        print('-----exchange-----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
 
                 if (iter+1)%self.reannealinterval == 0:
                     self.reanneal()
                     if self.verbose:
-                        print '-----reanneal-----'
+                        print('-----reanneal-----')
             
                 iter += 1
 

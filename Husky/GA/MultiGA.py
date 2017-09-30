@@ -5,9 +5,9 @@
 import numpy as np
 import time
 
-from Constraint import Constraints
-from MultiCandidate import MultiCandidates
-import MultiUtils
+from .Constraint import Constraints
+from .MultiCandidate import MultiCandidates
+from . import MultiUtils
 
 class MultiGA:
     '''
@@ -176,55 +176,55 @@ class MultiGA:
         if self.maxgeneration is not None:
             for i in range(self.maxgeneration):
                 if self.verbose:
-                    print '{num}th generation:'.format(num=i+1)
+                    print('{num}th generation:'.format(num=i+1),end=' ')
                 self.update()
                 
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: \n{reason}'.format(reason=code)
+                        print('Optimization terminated: \n{reason}'.format(reason=code))
                     break
 
                 if (i+1)%self.migrationinterval == 0:
                     self.migrate()
                     if self.verbose:
-                        print '----Migration----'
+                        print('----Migration----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
             if self.verbose:
-                print 'Optimization terminated: Maximum Generation'
+                print('Optimization terminated: Maximum Generation')
         else:
             generation = 1
             while 1:
                 if self.verbose:
-                    print '{num}th generation:'.format(num=generation)
+                    print('{num}th generation:'.format(num=generation))
                 self.update()
                     
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: \n{reason}'.format(reason=code)
+                        print('Optimization terminated: \n{reason}'.format(reason=code))
                     break
 
                 if generation%self.migrationinterval == 0:
                     self.migrate()
                     if self.verbose:
-                        print '----Migration----'
+                        print('----Migration----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
                 
                 generation += 1

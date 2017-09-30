@@ -72,7 +72,7 @@ def fun6(x):
         + 50*(1-x[2]/(2*x[2]-1))/(0.8*(1-np.exp(-0.4*x[0])))
 
 if __name__=='__main__':
-    print '-'*50
+    print('-'*50)
 
     LB = [0,0]
     UB = [1.6,1]
@@ -80,9 +80,9 @@ if __name__=='__main__':
     pso = PSO.PSO(fun1,2,LB=LB,UB=UB,IntCon=IntCon)
     pso.addconstraint(constraintfun1)
     pso.start()
-    print 'The global optimal is (0.5,1) with value 2'
-    print 'Fun 1 answer: ',pso.getsolution()
-    print '-'*50
+    print('The global optimal is (0.5,1) with value 2')
+    print('Fun 1 answer: ',pso.getsolution())
+    print('-'*50)
 
     
     LB = [0.5,0]
@@ -91,18 +91,18 @@ if __name__=='__main__':
     pso = PSO.PSO(fun2,2,C1=0.5,C2=0.5,LB=LB,UB=UB,IntCon=IntCon)
     pso.addconstraint(constraintfun2)
     pso.start()
-    print 'The global optimal is (1.35,1) with value 2.1'
-    print 'Fun 2 answer: ',pso.getsolution()
-    print '-'*50
+    print('The global optimal is (1.35,1) with value 2.1')
+    print('Fun 2 answer: ',pso.getsolution())
+    print('-'*50)
 
     LB = [13,0]
     UB = [100,100]
     pso = PSO.PSO(fun3,2,C1=0.5,C2=0.5,LB=LB,UB=UB)
     pso.addconstraint(constraintfun3)
     pso.start()
-    print 'The global optimal is (14,0.8) with value -6961'
-    print 'Fun 3 answer: ',pso.getsolution()
-    print '-'*50
+    print('The global optimal is (14,0.8) with value -6961')
+    print('Fun 3 answer: ',pso.getsolution())
+    print('-'*50)
 
     LB = [0,0,0]
     UB = [10,10,10]
@@ -110,9 +110,9 @@ if __name__=='__main__':
     pso = PSO.PSO(fun4,3,LB=LB,UB=UB,IntCon=IntCon)
     pso.addconstraint(constraintfun4)
     pso.start()
-    print 'The global optimal is (2,0,5) with value -68'
-    print 'Fun 4 answer: ',pso.getsolution()
-    print '-'*50
+    print('The global optimal is (2,0,5) with value -68')
+    print('Fun 4 answer: ',pso.getsolution())
+    print('-'*50)
 
     LB = [0,0,0,0]
     UB = [1,1,1,1]
@@ -120,9 +120,9 @@ if __name__=='__main__':
     pso = PSO.PSO(fun5,4,LB=LB,UB=UB,IntCon=IntCon)
     pso.addconstraint(constraintfun5,20)
     pso.start()
-    print 'The global optimal is (0,0,1,1) with value -6'
-    print 'Fun 5 answer: ',pso.getsolution()
-    print '-'*50
+    print('The global optimal is (0,0,1,1) with value -6')
+    print('Fun 5 answer: ',pso.getsolution())
+    print('-'*50)
 
     LB = [0,0,0]
     UB = [10,10,1]
@@ -130,5 +130,5 @@ if __name__=='__main__':
     pso = PSO.PSO(fun6,3,LB=LB,UB=UB,IntCon=IntCon)
     pso.addconstraint(constraintfun6)
     pso.start()
-    print 'The global optimal is (3.5,0,1) with value 99.2'
-    print 'Fun 6 answer: ',pso.getsolution()
+    print('The global optimal is (3.5,0,1) with value 99.2')
+    print('Fun 6 answer: ',pso.getsolution())

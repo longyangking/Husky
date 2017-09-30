@@ -5,14 +5,14 @@
 import numpy as np
 import time
 
-from Constraint import Constraints
-from Candidate import Candidates
-import Creation
-import Selection
-import FitnessScale
-import Crossover 
-import Mutation
-import GAoptions
+from .Constraint import Constraints
+from .Candidate import Candidates
+from . import Creation
+from . import Selection
+from . import FitnessScale
+from . import Crossover 
+from . import Mutation
+from . import GAoptions
 
 class GA:
     def __init__(self,func,nvars,LB=None,UB=None,IntCon=None,initpopulation=None,maxgeneration=None,popsize=300,\
@@ -173,55 +173,55 @@ class GA:
         if self.maxgeneration is not None:
             for i in range(self.maxgeneration):
                 if self.verbose:
-                    print '{num}th generation:'.format(num=i+1)
+                    print('{num}th generation:'.format(num=i+1),end=' ')
                 self.update()
                 
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: \n{reason}'.format(reason=code)
+                        print('Optimization terminated: \n{reason}'.format(reason=code))
                     break
 
                 if (i+1)%self.migrationinterval == 0 and self.groupsize > 1:
                     self.migrate()
                     if self.verbose:
-                        print '----Migration----'
+                        print('----Migration----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
             if self.verbose and not status:
-                print 'Optimization terminated: Maximum Generation'
+                print('Optimization terminated: Maximum Generation')
         else:
             generation = 1
             while 1:
                 if self.verbose:
-                    print '{num}th generation:'.format(num=generation)
+                    print('{num}th generation:'.format(num=generation))
                 self.update()
                     
                 [status,code] = self.check()
                 # Terminate by the tolerance
                 if status:
                     if self.verbose:
-                        print 'Optimization terminated: \n{reason}'.format(reason=code)
+                        print('Optimization terminated: \n{reason}'.format(reason=code))
                     break
 
                 if generation%self.migrationinterval == 0 and self.groupsize > 1:
                     self.migrate()
                     if self.verbose:
-                        print '----Migration----'
+                        print('----Migration----')
 
                 # Terminate by the time limit
                 if self.timelimit is not None:
                     currenttime = time.time()
                     if currenttime-starttime > self.timelimit:
                         if self.verbose:
-                            print 'Optimization terminated: Time Limit!'
+                            print('Optimization terminated: Time Limit!')
                         break
                 
                 generation += 1
